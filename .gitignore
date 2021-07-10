@@ -1,7 +1,13 @@
 .DS_Store
 .Rhistory
 .Rproj.user/
-~$annotationpkg.xlsx
 ~$Muscle_gene_summary_includeMF.xlsx
+~$annotationpkg.xlsx
 data/
+Muscle_gene_summary_includeMF.xlsx
+annotationpkg.xlsx
+*.Rproj
+QCreportM/
+QCreportF/
+
 
