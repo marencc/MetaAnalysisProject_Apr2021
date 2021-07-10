@@ -1,0 +1,91 @@
+---
+title: "GSE8479"
+date: "7/9/2021"
+output: html_document
+---
+
+## GSE8479
+(No data in ArrayExpress)
+Resistance Exercise Reverses Aging in Human Skeletal Muscle
+geo: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE8479
+journal: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0000465
+
+## Summary:
+Overall design
+A muscle biopsy was taken from the vastus lateralis muscle of the right or left leg (randomized)
+before exercise or immobilization (young people, N = 26 total) and
+before (N = 25), and after (N = 14), the training period in older adults,
+~20 cm proximal to the knee joint using a 5mm Bergström biopsy needle.
+The muscle was dissected of fat and connective tissue,
+immediately frozen in liquid nitrogen, and stored at -80°C for subsequent analysis.
+All subjects were required to abstain from strenuous physical activity
+for 48 h prior to the muscle biopsy.
+
+A muscle biopsy was taken from the vastus lateralis muscle of the right or left leg (randomized)
+before exercise or immobilization (young people, N = 26 total) and
+before (N = 25), and after (N = 14), the training period in older adults
+ref: subjects biopsied after training (N = 14) ... ./supplement/Table_S1.xls
+
+we found 596 genes differentially expressed using a false discovery rate cut-off of 5%.
+(compared younger and older subjects)
+
+**Platform**
+GPL2700	Sentrix HumanRef-8 Expression BeadChip
+
+**Sentrix HumanRef-8 Expression BeadChip**
+Annotation:
+method: https://support.bioconductor.org/p/119296/
+about Sentrix hu6 & hu8: https://www.illumina.com/documents/products/techbulletins/techbulletin_whole_genome_expression.pdf
+
+
+
+### problems
+**1. couldn't filtering out poorly annotated probes**  
+skipped the following step due to an error: the length difference between `id3` & `qual2` probably cause the error.  
+```{r}
+ids3 <- featureNames(gse)
+head(featureNames(gse))
+# [1] "GI_10047089-S" "GI_10047091-S" "GI_10047093-S" "GI_10047099-S" "GI_10047103-S"
+# [6] "GI_10047105-S"
+
+library(illuminaHumanv1.db)
+memo: CHIPNAME: HumanWG6v1
+qual2 <- unlist(mget(ids3, illuminaHumanv1PROBEQUALITY, ifnotfound = NA))
+
+length(unique(ids3))  # [1] 24354
+length(qual2)  # [1] 24361
+# skipped because this length difference may be causing error for "gse[!rem2,]" below
+table(qual2)
+# qual2
+#       Bad        Good     Good***    Good****    No match     Perfect  Perfect***  Perfect**** 
+#     4040         767          24         160          88       17548         657          1073
+
+rem2 <- qual2 == "No match" | qual2 == "Bad" | is.na(qual2)
+table(rem2)
+rem2
+# FALSE  TRUE 
+# 20229  4132  sum == 24361
+
+gse_rem2 <- gse[!rem2,]
+
+
+# if is.na() === TRUE: remove NAs
+bad.sample <- colMeans(is.na(exprs(gse_rem2))) > 0.8
+bad.gene <- rowMeans(is.na(exprs(gse_rem2))) > 0.5
+gse_rem2 <- gse_rem2[!bad.gene,!bad.sample]
+
+# Take a look to make a subset
+gse_rem2
+varLabels(gse_rem2)
+```
+<br>
+
+**2. Normalization**  
+The original study states that they used `limma` for normalization. But my analysis used `normalizeIllumina()` instead. The outputs from both function seemed to be same. Suppose, there is no problems choosing `normalizeIllumina()` here. 
+<br>
+
+
+
+
+
+

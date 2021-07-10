@@ -1,0 +1,58 @@
+---
+title: "GSE139258"
+date: "7/10/2021"
+output: html_document
+---
+
+## GSE139258
+
+- GEO:  https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE139258
+- journal: 
+https://physoc.onlinelibrary.wiley.com/doi/full/10.14814/phy2.14416
+
+### Summary:
+
+- short-term aerobic training -> improvement in skeletal muscle mitochondrial capacity
+-> changes in Tribbles 1 expression
+- **purpose:** understand the molecular mechanisms involved in the adaptation to exercise
+- **method:** performed multiple measurements of mitochondrial capacity both in vivo and ex vivo in lean or overweight individuals. 18-day aerobic exercise training.
+- **participants:**  Lean Active (**LA**, n = 7 males) and Lean/Overweight Sedentary (**LOS**, n = 9; n = 3 males). LOS individuals were not engaged in a regular exercise program. LOS individuals engaged in an exercise protocol for 18 days.
+- **results:**  
+  - Significance was set at p < .05
+  - mitochondrial oxidative respiratory capacity without an appreciable increase in mitochondrial content (robust transcriptome changes).  
+  - Tribbles pseudokinase 1, TRIB1, might be a potential mediator of the exercise response in human skeletal muscle  
+
+- Illumina HumanHT-12 V4.0 expression beadchip  
+(https://physoc.onlinelibrary.wiley.com/doi/full/10.14814/phy2.14416)
+- **Workflow:** http://www.bioconductor.org/packages/release/data/experiment/vignettes/BeadArrayUseCases/inst/doc/BeadArrayUseCases.pdf
+- **rawdata preprocesinng:** https://academic.oup.com/bioinformatics/article/23/16/2183/198810
+
+
+## Problems
+
+- subjects cannot be identified  
+limFit() was done `between-groups` (pre vs post) without factoring individual aspects
+- 
+
+
+## Skipped
+
+```{r}
+####. More elaborate quality control plots (skipped) ####
+arrayQualityMetrics(expressionset = gse,
+                    outdir = "QCreport",
+                    force = TRUE, do.logtransform = TRUE,
+                    intexercise.type = c("timepoint", "exercise.type", "gender"))
+dev.off()
+
+# Outlier
+# pData(gse)[c(9,13,17),]  # numbers are examples
+# pData(gse)[c(9,10,13,14,17,18),]
+
+# exclude outliers
+# outlier_samples <- c(9,10,13,14,17,18)
+# gse <- gse[,-outlier_samples]
+# dim(gse)
+```
+
+

@@ -1,0 +1,37 @@
+---
+title: "GSE58249"
+date: "7/9/2021"
+output: html_document
+---
+## GSE58249
+
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE58249
+- pubmed: https://pubmed.ncbi.nlm.nih.gov/25138607/
+- ncbi full txt: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4200377/
+- Illumina HumanHT-12 V4.0 expression beadchip
+- BA Workflow: http://www.bioconductor.org/packages/release/data/experiment/vignettes/BeadArrayUseCases/inst/doc/BeadArrayUseCases.pdf
+- getGEO(): **normalized data**
+- resistance (n = 9) / aerobic (n = 8)
+- 13 female, 5 male  
+
+
+
+### skipped
+```{r}
+####. More elaborate quality control plots (skipped) ####
+arrayQualityMetrics(expressionset = gse,
+                    outdir = "QCreport",
+                    force = TRUE, do.logtransform = TRUE,
+                    intexercise.type = c("timepoint", "exercise.type", "gender"))
+dev.off()
+
+# Outlier
+pData(female)[c(9,13,17),]
+pData(female)[c(9,10,13,14,17,18),]
+
+# exclude outliers
+outlier_samples <- c(9,10,13,14,17,18)
+female <- female[,-outlier_samples]
+dim(female)
+```
+
