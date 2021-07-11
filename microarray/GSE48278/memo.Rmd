@@ -1,0 +1,79 @@
+---
+title: "GSE48278"
+date: "7/11/2021"
+output: html_document
+---
+
+
+## GSE48278
+**Various exercise groups, both sex**  
+
+- **journal:** https://link.springer.com/article/10.1007/s00125-014-3343-4
+- **GEO:** https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE48278
+
+
+- A: Mild aerobic exercise - low amount/mod intensity n=10
+- B: Inactive control n=10
+- C: High aerobic exercise - high amt/vig intensity n=10
+- D: Moderate aerobic exercise - low amt/vig intensity n=10
+- E: Mod aerobic + resistance training n=8
+- F: Resistance training only n=9
+
+In our analysis, we compared pre & post of exercise training within a group. Group B was excluded.  
+
+
+- GPL570	[HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
+- E-GEOD-48278
+
+
+## Results  
+FA   
+p < 0.05: 1093  
+adj.P < 0.05: 0  
+  
+  
+FC   
+p < 0.05: 4295   
+adj.P < 0.05: 0   
+
+
+FD   
+p < 0.05: 3373   
+adj.P < 0.05: 0   
+
+
+FE   
+p < 0.05: 3144   
+adj.P < 0.05: 0   
+
+
+FF  
+p < 0.05: 848   
+adj.P < 0.05: 0   
+ 
+ 
+MA   
+p < 0.05: 663  
+adj.P < 0.05: 0   
+
+
+MC   
+p < 0.05: 815   
+adj.P < 0.05: 0   
+
+
+MD   
+p < 0.05: 1927   
+adj.P < 0.05: 0   
+
+
+ME  
+p < 0.05: 3895   
+adj.P < 0.05: 2   
+
+
+MF   
+p < 0.05: 2817   
+adj.P < 0.05: 0  
+
+
