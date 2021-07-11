@@ -58,18 +58,6 @@ exprs(gse)[1:5, 1:5]
 # ILMN_1651210         NA         NA    6.20404    6.34881    6.16962
 
 
-# checking if the loaded data is already normalized ----
-head(pData(gse)$data_processing, 1)
-# [1] "Data was processed in Genome Studio, quantile normalized and
-#      removal of probes not detacted in at least 10% of the samples"
-
-oligo::boxplot(log2(exprs(gse)), target = "core",
-               main = "Boxplot of log2-intensitites for the raw data",
-               las = 2,
-               outline = FALSE,
-               cex.axis=0.7)
-
-
 #### Data cleaning ####
 # featuredata ----
 head(fData(gse), 3)
@@ -190,6 +178,12 @@ dim(pD)  # 30  7
 head(pData(gse)$data_processing, 1)
 # [1] "Data was processed in Genome Studio, quantile normalized and
 #      removal of probes not detacted in at least 10% of the samples"
+
+oligo::boxplot(log2(exprs(gse)), target = "core",
+               main = "Boxplot of log2-intensitites for the raw data",
+               las = 2,
+               outline = FALSE,
+               cex.axis=0.7)
 
 
 # PCA Analysis ----

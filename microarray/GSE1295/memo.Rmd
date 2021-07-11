@@ -1,0 +1,32 @@
+---
+title: "GSE1295"
+date: "7/10/2021"
+output: html_document
+---
+
+## GSE1295 (MicroArray)
+
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi
+- Journal: https://journals.physiology.org/doi/full/10.1152/japplphysiol.00331.2004
+
+- **annotation:** Affymetrix Human Genome U133A (GPL96)  --- `hgu133a.db`
+- **subjects:** 3 female and 3 male (all Overweight)
+- **biopsy:** 9M later (24h, 96h: 4D, 336h: 14D)  ---> compare: base & 24h (9M later)
+- **exercise type:** Aerobics
+- **statistical significance:** P < 0.05; paired t-test and ANOVA for pairwise and time-series analyses, respectively (paper, "Gene expression data analysis.")
+
+
+
+
+
+
+## Skipped
+
+
+
+## Problems
+
+
+
+
+
