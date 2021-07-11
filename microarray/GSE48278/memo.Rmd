@@ -27,53 +27,84 @@ In our analysis, we compared pre & post of exercise training within a group. Gro
 
 
 ## Results  
-FA   
-p < 0.05: 1093  
-adj.P < 0.05: 0  
-  
-  
-FC   
-p < 0.05: 4295   
-adj.P < 0.05: 0   
+FA
+p < 0.05: 1093
+adj.P < 0.05: 0
 
+FC
+p < 0.05: 4295
+adj.P < 0.05: 0
 
-FD   
-p < 0.05: 3373   
-adj.P < 0.05: 0   
+FD
+p < 0.05: 3373
+adj.P < 0.05: 0
 
+FE
+p < 0.05: 3144
+adj.P < 0.05: 0
 
-FE   
-p < 0.05: 3144   
-adj.P < 0.05: 0   
-
-
-FF  
-p < 0.05: 848   
-adj.P < 0.05: 0   
+FF
+p < 0.05: 848
+adj.P < 0.05: 0
  
- 
-MA   
-p < 0.05: 663  
-adj.P < 0.05: 0   
+MA
+p < 0.05: 663
+adj.P < 0.05: 0
+
+MC
+p < 0.05: 815
+adj.P < 0.05: 0
+
+MD
+p < 0.05: 1927
+adj.P < 0.05: 0
+
+ME
+p < 0.05: 3895
+adj.P < 0.05: 2
+
+MF
+p < 0.05: 2817
+adj.P < 0.05: 0
 
 
-MC   
-p < 0.05: 815   
-adj.P < 0.05: 0   
+**after adding exprs(final) <- log2(exprs(final))**  
+FA 
+p < 0.05: 656 
+adj.P < 0.05: 0 
 
+FC 
+p < 0.05: 3246 
+adj.P < 0.05: 0 
 
-MD   
-p < 0.05: 1927   
-adj.P < 0.05: 0   
+FD 
+p < 0.05: 3006 
+adj.P < 0.05: 0 
 
+FE 
+p < 0.05: 2824 
+adj.P < 0.05: 0 
 
-ME  
-p < 0.05: 3895   
-adj.P < 0.05: 2   
+FF 
+p < 0.05: 176 
+adj.P < 0.05: 0 
 
+MA 
+p < 0.05: 643 
+adj.P < 0.05: 0 
 
-MF   
-p < 0.05: 2817   
-adj.P < 0.05: 0  
+MC 
+p < 0.05: 518 
+adj.P < 0.05: 0 
 
+MD 
+p < 0.05: 1470 
+adj.P < 0.05: 0 
 
+ME 
+p < 0.05: 3184 
+adj.P < 0.05: 0 
+
+MF 
+p < 0.05: 1962 
+adj.P < 0.05: 0 
