@@ -1,0 +1,43 @@
+---
+title: "GSE28422"
+date: "7/10/2021"
+output: html_document
+---
+
+## GSE28422: Resistance
+
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE28422
+- pmc: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3365403/
+
+## Summary
+
+- 28 young/old adults
+    - yng: n=16, 24±1y 8m & 8f
+    - old: n=12, 84±1y 6m & 6f
+    - male: n=14, female: n=14
+- 12 wks of progressive resistance training (3D/wk = 36 sessions)
+- biopsies (4): pre, post of 1st & 36th training
+- E-GEOD-28422
+- GPL570[HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
+
+## Analysis
+
+- comparison: 1st pre vs 2nd pre (i.g. T1 vs T3)
+
+
+## Skipped 
+
+
+
+
+## Problems
+
+
+
+
+
+
+
+
+
+
