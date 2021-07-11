@@ -229,16 +229,16 @@ no_of_samples
 # 10 10 10  8 10 10 10 10  8  8
 
 samples_cutoff <- min(no_of_samples)
-idx_man_threshold <- apply(exprs(norm), 1,
+idx_man_threshold <- apply(log2(exprs(norm)), 1,
                            function(x){ sum(x > man_threshold) >= samples_cutoff})
 table(idx_man_threshold)
 # FALSE  TRUE 
-#    29 54646 
+#  5511 49164
 
 manfiltered <- subset(gse, idx_man_threshold)
 
 dim(exprs(gse))  # 54675    94
-dim(exprs(manfiltered))  # 54646    94
+dim(exprs(manfiltered))  # 49164    94
 
 
 
@@ -250,19 +250,19 @@ anno <- AnnotationDbi::select(hgu133plus2.db,
                               keytype = "PROBEID")
 table(is.na(anno))
 # FALSE   TRUE 
-# 154179  20700
+# 140037  17466
 
 anno <- subset(anno, !is.na(SYMBOL))
 sum(is.na(anno$SYMBOL)) # 0
 nosymbols <- !(featureNames(manfiltered) %in% anno$PROBEID)
 table(nosymbols)
 # FALSE  TRUE 
-# 44296 10350
+# 40431  8733
 
 withsymbols <- subset(manfiltered, !nosymbols)
 dim(withsymbols)
 # Features  Samples 
-# 44296       94
+# 40431       94
 
 
 #. Removing multiple mappings ----
@@ -286,11 +286,11 @@ nrow(probe_stats) # 2227: clusters that map to multiple gene symbols → remove
 ids_to_exlude <- (featureNames(withsymbols) %in% probe_stats$PROBEID)
 table(ids_to_exlude)
 # FALSE  TRUE 
-# 42069  2227 
+# 38362  2069
 
 final <- subset(withsymbols, !ids_to_exlude)
 validObject(final)
-dim(final)  # 42069  94
+dim(final)  # 38362  94
 
 
 # also exclude them from the feature data anno
@@ -305,7 +305,7 @@ rownames(fData(final)) <- fData(final)$PROBEID
 validObject(final)
 dim(final)
 # Features  Samples 
-# 42069       94
+# 38362       94
 
 
 
@@ -316,6 +316,8 @@ timepoint <- pD$timepoint
 group <- pD$group
 
 #### lmFit() ####
+exprs(final)[1:3, 1:3]
+exprs(final) <- log2(exprs(final))
 for (i in unique(group)) {
     print(i)
     subjects <- individual[group == i]
@@ -331,13 +333,13 @@ for (i in unique(group)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE48278", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE48278re", i, ".csv"))
 }
 
 
 #### Visualizing results ####
 library(RColorBrewer)
-result_files <- list.files(pattern = ".csv")
+result_files <- list.files(pattern = "re...csv")
 result_files
 # [1] "res_GSE48278FA.csv" "res_GSE48278FC.csv" "res_GSE48278FD.csv"
 # [4] "res_GSE48278FE.csv" "res_GSE48278FF.csv" "res_GSE48278MA.csv"
