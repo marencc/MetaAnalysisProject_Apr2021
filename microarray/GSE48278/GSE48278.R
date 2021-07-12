@@ -357,7 +357,7 @@ for (i in 1:length(result_files)) {
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
          main = paste(group, "Pval"), xlab  = NULL)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "Pval"), xlab = NULL)
+         main = paste(group, "adj.Pval"), xlab = NULL)
     
     ## some numbers ##
     cat(group, "\n")

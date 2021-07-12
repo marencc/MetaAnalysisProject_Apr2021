@@ -1,0 +1,45 @@
+---
+title: "GSE117525"
+date: "7/11/2021"
+output: html_document
+---
+
+## GSE117525
+- Expression of protocadherin gamma in skeletal muscle tissue is associated with
+- age and muscle weakness
+- **journal:** https://onlinelibrary.wiley.com/doi/full/10.1002/jcsm.12099
+- **GEO:** https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE117525
+- **pubmed(abst):** https://pubmed.ncbi.nlm.nih.gov/27239416/
+
+**treatment_protocol_ch1**  
+
+- GSM3302211 Training for both frail and healthy older subjects and consisted of  
+progressive full‐body resistance‐type exercise training. However,  
+the frail older group had training sessions twice per week,  
+whereas the healthy older group trained three times per week.  
+In addition, subjects took a protein or control drink for the duration of the study.  
+The healthy older group received a 15g portion of milk protein or control supplement at breakfast.  
+The frail older group received a similar drink containing 15g supplement drink (milk protein or control)  
+at breakfast and lunch.  
+
+- GPL20880	[HuGene-1_1-st] Affymetrix Human Gene 1.1 ST Array
+- Annotation: pd.hugene.1.1.st.v1
+
+**ref for annotation packages**  
+```{r message=FALSE, warning=FALSE}
+library(pd.hugene.1.1.st.v1)
+library(hugene11sttranscriptcluster.db)
+# ??hugene11sttranscriptcluster.db
+# ls("package:hugene11sttranscriptcluster.db")
+```
+
+
+## Results
+
+F 
+p < 0.05: 1604 
+adj.P < 0.05: 6 
+
+M 
+p < 0.05: 2031 
+adj.P < 0.05: 194
