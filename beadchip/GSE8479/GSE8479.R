@@ -406,7 +406,7 @@ for (i in unique(gender)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE58249", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE8479", i, ".csv"))
 }
 
 
