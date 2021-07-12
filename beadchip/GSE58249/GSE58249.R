@@ -58,15 +58,18 @@ exprs(gse)[1:5, 1:5]
 #### Data cleaning ####
 # featuredata ----
 head(fData(gse), 3)
+names(fData(gse))
 fData(gse) <- fData(gse)[,c("Probe_Id",
-                            "Accession",
-                            "Source",
+                            "GB_ACC",
                             "Symbol",
-                            "Entrez_Gene_ID",
-                            "Synonyms"
+                            "Entrez_Gene_ID"
                             )]
-names(fData(gse)) <- c("PROBEID", "ACCNUM", "SOURCE", "SYMBOL","ENTREZID", "SYNONYMS")
+names(fData(gse)) <- c("PROBEID", "ACCNUM", "SYMBOL","ENTREZID")
 head(fData(gse), 3)
+#                   PROBEID      ACCNUM    SYMBOL ENTREZID
+# ILMN_1343291 ILMN_1343291 NM_001402.5    EEF1A1     1915
+# ILMN_1343295 ILMN_1343295 NM_002046.3     GAPDH     2597
+# ILMN_1651199 ILMN_1651199 XM_944551.1 LOC643334   643334
 
 
 # phenodata ----
@@ -97,7 +100,7 @@ pD$group <- paste0(pD$gender , str_sub(pD$exercise.type, 1,1))
 
 head(pD)
 tail(pD)
-dim(pD)
+dim(pD)  # 34  7
 levels(factor(pD$exercise.type))  # "AEROBIC"    "RESISTANCE"
 levels(factor(pD$timepoint))  # "POST" "PRE" 
 pD$timepoint <- relevel(factor(tolower(pD$timepoint)), ref = "pre")
@@ -149,7 +152,13 @@ dim(gse)
 
 # Take a look
 exprs(gse)[1:5, 1:5]
-exprs(gse)[,1:2]
+# GSM1404698 GSM1404699 GSM1404700 GSM1404701 GSM1404702
+# ILMN_1343291         NA         NA   10.62050   10.57280   10.47720
+# ILMN_1343295         NA         NA   11.79760   12.10130   11.98290
+# ILMN_1651209         NA         NA    6.19532    6.24520    6.25682
+# ILMN_1651228         NA         NA    9.71361    9.56847   10.02950
+# ILMN_1651229         NA         NA    7.58898    7.57927    7.59479
+
 
 # if is.na() === TRUE ----
 bad.sample <- colMeans(is.na(exprs(gse))) > 0.8
@@ -160,6 +169,8 @@ dim(gse)
 # 34476       30 
 
 table(bad.sample)
+# FALSE  TRUE 
+# 30     4
 keep <- rownames(pD) %in% sampleNames(gse)
 pD <- pD[keep,]
 head(pD, 3)
@@ -217,7 +228,6 @@ timepoint <- pD$timepoint
 group <- pD$group
 # gender <- pD$gender
 # exercise.type <- pD$exercise.type
-# timepoint <- pD$timepoint
 
 #### lmFit() ####
 for (i in unique(group)) {
@@ -235,13 +245,15 @@ for (i in unique(group)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE58249", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE58249re", i, ".csv"))
 }
 
 
 #### Visualizing results ####
 library(RColorBrewer)
-result_files <- list.files(pattern = ".csv")
+result_files <- list.files(pattern = "re...csv")
+result_files
+# "res_GSE58249reFA.csv" "res_GSE58249reFR.csv" "res_GSE58249reMA.csv" "res_GSE58249reMR.csv"
 par(mfrow = c(2,2))
 
 for (i in 1:length(result_files)) {
