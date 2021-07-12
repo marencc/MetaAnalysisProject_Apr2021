@@ -6,8 +6,10 @@ output: html_document
 
 ## GSE1295 (MicroArray)
 
-- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE1295
 - Journal: https://journals.physiology.org/doi/full/10.1152/japplphysiol.00331.2004
+- pubmed: https://pubmed.ncbi.nlm.nih.gov/25138607/
+- 
 
 - **annotation:** Affymetrix Human Genome U133A (GPL96)  --- `hgu133a.db`
 - **subjects:** 3 female and 3 male (all Overweight)
@@ -19,12 +21,46 @@ output: html_document
 
 
 
-
 ## Skipped
 
 
 
 ## Problems
+
+
+
+## Results
+7/12/2021  
+(log-transformed data)  
+res_GSE1295reF.csv 
+p < 0.05: 808 
+p < 0.01: 144 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE1295reM.csv 
+p < 0.05: 1045 
+p < 0.01: 179 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0
+
+<br>
+
+(non log-transformed data)  
+res_GSE1295F.csv 
+p < 0.05: 949 
+p < 0.01: 190 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE1295M.csv 
+p < 0.05: 935 
+p < 0.01: 134 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+
+
 
 
 

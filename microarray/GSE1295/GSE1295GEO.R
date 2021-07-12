@@ -1,29 +1,21 @@
 # GSE1295
-# GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE1295
-# Journal: https://journals.physiology.org/doi/full/10.1152/japplphysiol.00331.2004
-# Affymetrix Human Genome U133A (GPL96) --> hgu133a.db
-
-
 #### Loading packages ####
 library(Biobase)
 library(oligoClasses)
 library(hgu133a.db)
-# library(pd.hg.u133a)
 library(oligo)
-# library(arrayQualityMetrics)
 library(limma)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(openxlsx)
 library(devtools)
 
 
 #### Importing raw data from GEO ####
 library(GEOquery)
 geo <- getGEO("GSE1295")
-length(geo)
+length(geo)  # 2
 names(geo)
 # [1] "GSE1295-GPL8300_series_matrix.txt.gz" "GSE1295-GPL96_series_matrix.txt.gz" 
     ### For this analysis, we need a data from platform GPL96
@@ -53,18 +45,22 @@ exprs(gse)[1:3, 1:3]
 # 117_at     63.93585  45.46224  86.41307
 
 
-head(fData(gse), 3)
-names(fData(gse))
 
 #### Data cleaning ####
 # featuredata ----
 head(fData(gse), 3)
+names(fData(gse))
 fData(gse) <- fData(gse)[,c("ID",  # ex. 1007_s_at
+                            "GB_ACC",
                             "Gene Symbol",
                             "ENTREZ_GENE_ID"
                             )]
-names(fData(gse)) <- c("PROBEID", "SYMBOL","ENTREZID")
+names(fData(gse)) <- c("PROBEID", "ACCNUM", "SYMBOL","ENTREZID")
 head(fData(gse), 3)
+#             PROBEID ACCNUM           SYMBOL          ENTREZID
+# 1007_s_at 1007_s_at U48705 DDR1 /// MIR4640 780 /// 100616237
+# 1053_at     1053_at M87338             RFC2              5982
+# 117_at       117_at X51757            HSPA6              3310
 
 
 # phenodata ----
@@ -79,15 +75,15 @@ pD <- pD.all[, c("title", # identification?
 pD$gender <- as.factor(ifelse(str_detect(pD$title, "-M"), "M", "F")) # gender
 pD$title <- str_replace(pD$title, "PSS-", "")
 pD$title <- str_replace(pD$title, "aUA-s2", "")
-pD$timepoint <- ifelse(str_detect(pD$title, "0h"), "pre", (ifelse(str_detect(pD$title, "24h"), "post", "NA")))
-pD$group <- paste(pD$gender, pD$timepoint, sep = "_")
+pD$timepoint <- ifelse(str_detect(pD$title, "0h"), "pre", 
+                       (ifelse(str_detect(pD$title, "24h"), "post", "NA")))
+# pD$group <- paste(pD$gender, pD$timepoint, sep = "_")
 pD$id <- paste0("S_", pD$gender, str_sub(pD$title, -1, -1))
 head(pD, 3)
-#           title                                               description gender timepoint group   id
-# GSM19136  F0h-1                                                       N/A      F       pre F_pre S_F1
-# GSM19148 M96h-5 LC ID 208 Male Age 40 to 65  25 mg Needle biopsy 96 hours      M        NA  M_NA S_M5
-# GSM19149 M96h-4 LC ID 254 Male Age 40 to 65  25 mg Needle biopsy 96 hours      M        NA  M_NA S_M4
-
+#           title                                               description gender timepoint   id
+# GSM19136  F0h-1                                                       N/A      F       pre S_F1
+# GSM19148 M96h-5 LC ID 208 Male Age 40 to 65  25 mg Needle biopsy 96 hours      M        NA S_M5
+# GSM19149 M96h-4 LC ID 254 Male Age 40 to 65  25 mg Needle biopsy 96 hours      M        NA S_M4
 
 # subsetting ----
 #. keep only pre/post exercise ----
@@ -95,21 +91,21 @@ keep <- grep("pre|post", pD$timepoint)
 pD <- pD[keep,]
 gse <- gse[,keep]
 pD
-#           title                                                        description gender timepoint  group   id
-# GSM19136  F0h-1                                                                N/A      F       pre  F_pre S_F1
-# GSM19158  F0h-2          LC ID 082 Female Age 40 to 65  25 mg Needle biopsy 0 hour      F       pre  F_pre S_F2
-# GSM19159  F0h-3          LC ID 093 Female Age 40 to 65  25 mg Needle biopsy 0 hour      F       pre  F_pre S_F3
-# GSM19160 F24h-3         LC ID 093 Female Age 40 to 65  25 mg Needle biopsy 24 hour      F      post F_post S_F3
-# GSM19161 F24h-1                                                                N/A      F      post F_post S_F1
-# GSM19162 F24h-2         LC ID 082 Female Age 40 to 65  25 mg Needle biopsy 24 hour      F      post F_post S_F2
-# GSM19170  M0h-4           LC ID 254 Male Age 40 to 65  25 mg Needle biopsy 0 hours      M       pre  M_pre S_M4
-# GSM19171  M0h-5           LC ID 208 Male Age 40 to 65  25 mg Needle biopsy 0 hours      M       pre  M_pre S_M5
-# GSM19172  M0h-1            LC ID 079 Male Age 40 to 65  25 mg Needle biopsy 0 hour      M       pre  M_pre S_M1
-# GSM19173 M24h-1           LC ID 079 Male Age 40 to 65  25 mg Needle biopsy 24 hour      M      post M_post S_M1
-# GSM19174 M24h-5          LC ID 208 Male Age 40 to 65  25 mg Needle biopsy 24 hours      M      post M_post S_M5
-# GSM20659 M24h-4 LC ID 254 Male needle biopsy within 24 hours of last exercise bout      M      post M_post S_M4
+#           title                                                        description gender timepoint   id
+# GSM19136  F0h-1                                                                N/A      F       pre S_F1
+# GSM19158  F0h-2          LC ID 082 Female Age 40 to 65  25 mg Needle biopsy 0 hour      F       pre S_F2
+# GSM19159  F0h-3          LC ID 093 Female Age 40 to 65  25 mg Needle biopsy 0 hour      F       pre S_F3
+# GSM19160 F24h-3         LC ID 093 Female Age 40 to 65  25 mg Needle biopsy 24 hour      F      post S_F3
+# GSM19161 F24h-1                                                                N/A      F      post S_F1
+# GSM19162 F24h-2         LC ID 082 Female Age 40 to 65  25 mg Needle biopsy 24 hour      F      post S_F2
+# GSM19170  M0h-4           LC ID 254 Male Age 40 to 65  25 mg Needle biopsy 0 hours      M       pre S_M4
+# GSM19171  M0h-5           LC ID 208 Male Age 40 to 65  25 mg Needle biopsy 0 hours      M       pre S_M5
+# GSM19172  M0h-1            LC ID 079 Male Age 40 to 65  25 mg Needle biopsy 0 hour      M       pre S_M1
+# GSM19173 M24h-1           LC ID 079 Male Age 40 to 65  25 mg Needle biopsy 24 hour      M      post S_M1
+# GSM19174 M24h-5          LC ID 208 Male Age 40 to 65  25 mg Needle biopsy 24 hours      M      post S_M5
+# GSM20659 M24h-4 LC ID 254 Male needle biopsy within 24 hours of last exercise bout      M      post S_M4
 
-dim(pD)  # 12  6
+dim(pD)  # 12  5
 dim(gse)
 # Features  Samples 
 # 22283       12
@@ -121,7 +117,7 @@ dim(gse)
 #### checking data intensities
 oligo::boxplot(log2(exprs(gse)), target = "core",
                main = "Boxplot of log2-intensitites for the raw data",
-               # outline = FALSE,
+               outline = FALSE,
                las = 2,
                cex.axis=0.7)
 # memo: based on this boxplot, the data seems to be already normalized
@@ -132,8 +128,7 @@ oligo::boxplot(log2(exprs(gse)), target = "core",
 
 #### Quality control of the raw data ####
 #. PCA analysis ----
-normData <- gse
-myexp <- log2(exprs(normData))
+myexp <- log2(exprs(gse))
 PCA <- prcomp(t(myexp), scale = FALSE)
 percentVar <- round(100*PCA$sdev^2/sum(PCA$sdev^2),1)
 sd_ratio <- sqrt(percentVar[2] / percentVar[1])
@@ -142,8 +137,7 @@ head(pD, 3)
 dataGG <- data.frame(PC1 = PCA$x[,1], PC2 = PCA$x[,2],
                      individual = pD$id,
                      gender = pD$gender,
-                     timepoint = pD$timepoint,
-                     group = pD$group
+                     timepoint = pD$timepoint
                      )
 
 ggplot(dataGG, aes(PC1, PC2)) +
@@ -156,8 +150,6 @@ ggplot(dataGG, aes(PC1, PC2)) +
 
 
 #### Filtering based on intensity ####
-# filter out lowly expressed genes
-# “soft” intensity based filtering here, since this is recommended by the limma
 #. Histogram ----
 medians <- rowMedians(log2(exprs(gse)))
 hist_res <- hist(medians, 100, col = "cornsilk1", freq = FALSE,
@@ -176,18 +168,21 @@ abline(v = man_threshold, col = "coral4", lwd = 2)
 # get a list:
 no_of_samples <- table(paste(pD$gender, pD$timepoint, sep = "_"))
 no_of_samples
+# F_post  F_pre M_post  M_pre 
+# 3      3      3      3 
 
 samples_cutoff <- min(no_of_samples)
-idx_man_threshold <- apply(exprs(gse), 1,
+idx_man_threshold <- apply(log2(exprs(gse)), 1,
                            function(x){
                                sum(x > man_threshold) >= samples_cutoff})
 table(idx_man_threshold)
-
+# FALSE  TRUE 
+# 2055 20228
 
 manfiltered <- subset(gse, idx_man_threshold)
 
 dim(exprs(gse))  # 22283    12
-dim(exprs(manfiltered))  # 22233    12
+dim(exprs(manfiltered))  # 20228    12
 
 
 
@@ -195,11 +190,11 @@ dim(exprs(manfiltered))  # 22233    12
 library(hgu133a.db)
 anno <- AnnotationDbi::select(hgu133a.db,
                               keys = (featureNames(manfiltered)),
-                              columns = c("SYMBOL", "GENENAME"),
+                              columns = c("SYMBOL", "GENENAME", "ENTREZID"),
                               keytype = "PROBEID")
 table(is.na(anno))
 # FALSE  TRUE 
-# 70836  2406
+# 85718  3006
 
 
 anno <- subset(anno, !is.na(SYMBOL))
@@ -207,12 +202,12 @@ sum(is.na(anno$SYMBOL)) # 0
 nosymbols <- !(featureNames(manfiltered) %in% anno$PROBEID)
 table(nosymbols)
 # FALSE  TRUE 
-# 21030  1203
+# 19226  1002
 
 withsymbols <- subset(manfiltered, !nosymbols)
 dim(withsymbols)
 # Features  Samples 
-# 21030       12
+# 19226       12
 
 
 #. Removing multiple mappings ----
@@ -230,17 +225,17 @@ anno_filtered <- filter(anno_summarized, no_of_matches > 1)
 head(anno_filtered)
 
 probe_stats <- anno_filtered
-nrow(probe_stats) # 1643: clusters that map to multiple gene symbols → remove
+nrow(probe_stats) # 1112: clusters that map to multiple gene symbols → remove
 
 # remove above IDs(probe_stats)
 ids_to_exlude <- (featureNames(withsymbols) %in% probe_stats$PROBEID)
 table(ids_to_exlude)
 # FALSE  TRUE 
-# 19808  1222
+# 18114  1112 
 
 final <- subset(withsymbols, !ids_to_exlude)
 validObject(final)
-dim(final)  # 19808    12 
+dim(final)  # 18114    12 
 
 
 # also exclude them from the feature data anno
@@ -255,7 +250,7 @@ rownames(fData(final)) <- fData(final)$PROBEID
 validObject(final)
 dim(final)
 # Features  Samples 
-# 19808       12
+# 18114       12
 
 
 
@@ -266,6 +261,7 @@ timepoint <- pD$timepoint
 gender <- pD$gender
 
 #### lmFit() ####
+exprs(final) <- log2(exprs(final))
 for (i in unique(gender)) {
     print(i)
     subjects <- individual[gender == i]
@@ -281,7 +277,8 @@ for (i in unique(gender)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE1295", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE1295re", i, ".csv"))
+    print(head(table))
 }
 
 
@@ -299,14 +296,16 @@ for (i in 1:length(result_files)) {
     
     ## histgram ##
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
-         main = paste(group, "Pval"), xlab  = NULL)
+         main = paste(file, "Pval"), xlab  = NULL)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "Pval"), xlab = NULL)
+         main = paste(file, "adj.Pval"), xlab = NULL)
     
     ## some numbers ##
-    cat(group, "\n")
+    cat(file, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
-    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n\n")
+    cat("p < 0.01:", nrow(subset(results, P.Value < 0.01)), "\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
+    cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
 }
 
 # to explore more (ex)
