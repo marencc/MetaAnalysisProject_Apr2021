@@ -407,7 +407,7 @@ for (i in unique(gender)) {
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
     write.csv(table, file = paste0("res_GSE8479", i, ".csv"))
-    head(table)
+    print(head(table))
 }
 
 
@@ -425,13 +425,14 @@ for (i in 1:length(result_files)) {
     
     ## histgram ##
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
-         main = paste(group, "Pval"), xlab  = NULL)
+         main = paste(file, "Pval"), xlab  = NULL)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "adj.Pval"), xlab = NULL)
+         main = paste(file, "adj.Pval"), xlab = NULL)
     
     ## some numbers ##
-    cat(group, "\n")
+    cat(file, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
+    cat("p < 0.01:", nrow(subset(results, P.Value < 0.01)), "\n")
     cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
     cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
 }
