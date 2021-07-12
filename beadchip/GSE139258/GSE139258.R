@@ -5,11 +5,9 @@ library(oligoClasses)
 library(oligo)
 library(limma)
 library(ggplot2)
-library(RColorBrewer)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(openxlsx)
 library(devtools)
 
 
@@ -39,7 +37,7 @@ gse
 dim(gse)
 # Features  Samples 
 # 47231       24 
-exprs(gse)[1:5, 1:5]
+exprs(gse)[1:5, 1:5]  # non log-transformed data
 #              GSM4134936 GSM4134937 GSM4134938 GSM4134939 GSM4134940
 # ILMN_1343291 22362.8200 23690.2000 19798.9500 40214.4500 25279.4700
 # ILMN_1343295 58602.3800 65495.7300 60236.0700 57477.4600 57218.5900
@@ -48,34 +46,24 @@ exprs(gse)[1:5, 1:5]
 # ILMN_1651210   121.1727   141.3416   127.7274   133.1908   140.4606
 
 
-# checking if the loaded data is already normalized ----
-head(pData(gse)$data_processing, 1)
-# [1] "The data were normalised using cubic spline normalization with IlluminaGUI in R"
-
-oligo::boxplot(log2(exprs(gse)), target = "core",
-               main = "Boxplot of log2-intensitites for the raw data",
-               las = 2,
-               outline = FALSE,
-               cex.axis=0.7)
-### This data is already normalized
-
 
 #### Data cleaning ####
 # featuredata ----
 head(fData(gse), 3)
 names(fData(gse))
 fData(gse) <- fData(gse)[,c("Probe_Id",
-                            "Accession",
-                            "Source",
+                            "GB_ACC",
                             "Symbol",
                             "Entrez_Gene_ID"
 )]
-names(fData(gse)) <- c("PROBEID", "ACCNUM", "SOURCE", "SYMBOL","ENTREZID")
+names(fData(gse)) <- c("PROBEID", "ACCNUM", "SYMBOL","ENTREZID")
 head(fData(gse), 3)
-#                   PROBEID      ACCNUM SOURCE    SYMBOL ENTREZID
-# ILMN_1343291 ILMN_1343291 NM_001402.5 RefSeq    EEF1A1     1915
-# ILMN_1343295 ILMN_1343295 NM_002046.3 RefSeq     GAPDH     2597
-# ILMN_1651199 ILMN_1651199 XM_944551.1 RefSeq LOC643334   643334
+#                   PROBEID      ACCNUM    SYMBOL ENTREZID
+# ILMN_1343291 ILMN_1343291 NM_001402.5    EEF1A1     1915
+# ILMN_1343295 ILMN_1343295 NM_002046.3     GAPDH     2597
+# ILMN_1651199 ILMN_1651199 XM_944551.1 LOC643334   643334
+
+### memo: GENENAME may be needed in the later analysis
 
 
 # phenodata ----
@@ -130,7 +118,6 @@ pD$gender <- str_sub(pD$gender, 1, 1)
 levels(factor(pD$timepoint))  # "POST" "PRE" 
 pD$timepoint <- relevel(factor(tolower(pD$timepoint)), ref = "pre")
 levels(factor(pD$timepoint))  # "pre"  "post"
-pD$group <- paste(str_sub(pD$gender, 1, 1), pD$timepoint, sep = "_")
 
 
 # skipped (subjects cannot be identified)
@@ -191,21 +178,26 @@ table(bad.sample)
 head(pData(gse)$data_processing, 1)
 # [1] "The data were normalised using cubic spline normalization with IlluminaGUI in R"
 
+oligo::boxplot(log2(exprs(gse)), target = "core",
+               main = "Boxplot of log2-intensitites for the raw data",
+               las = 2,
+               outline = FALSE,
+               cex.axis=0.7)
 
-# PCA Analysis ----
+
+
+#### PCA Analysis ####
 # log2
 exp_raw <- log2(exprs(gse))
 PCA_raw <- prcomp(t(exp_raw), scale. = FALSE)
 percentVar <- round(100*PCA_raw$sdev^2/sum(PCA_raw$sdev^2),1)
 sd_ratio <- sqrt(percentVar[2] / percentVar[1])
 
-# PCA plot
 # head(pD, 3)
 dataGG <- data.frame(PC1 = PCA_raw$x[,1], PC2 = PCA_raw$x[,2],
                      # individual = pD$individual,  # cannot identify
                      gender = pD$gender,
-                     timepoint = pD$timepoint,
-                     group = pD$group
+                     timepoint = pD$timepoint
                      )
 
 # gender × exercise.type
@@ -226,6 +218,7 @@ timepoint <- pD$timepoint
 gender <- pD$gender
 
 #### lmFit() ####
+exprs(gse) <- log2(exprs(gse))
 for (i in unique(gender)) {
     print(i)
     # subjects <- individual[group == i]
@@ -241,7 +234,8 @@ for (i in unique(gender)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE139258", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE139258re", i, ".csv"))
+    print(head(table))
 }
 
 
@@ -254,18 +248,19 @@ par(mfrow = c(2,2))
 for (i in 1:length(result_files)) {
     file <- result_files[i]
     results <- read.csv(file)
-    group <- ifelse(str_detect(file, "Male"), "male", "female")
+    group <- str_sub(file, -5, -5)
     
     ## histgram ##
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
          main = paste(group, "Pval"), xlab  = NULL)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "Pval"), xlab = NULL)
+         main = paste(group, "adj.Pval"), xlab = NULL)
     
     ## some numbers ##
     cat(group, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
-    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
+    cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
 }
 
 # to explore more (ex)
