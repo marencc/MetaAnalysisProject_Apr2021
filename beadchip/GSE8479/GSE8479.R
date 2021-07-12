@@ -406,13 +406,13 @@ for (i in unique(gender)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE58249normLog", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE58249", i, ".csv"))
 }
 
 
 #### Visualizing results ####
 library(RColorBrewer)
-result_files <- list.files(pattern = "normLog..csv")
+result_files <- list.files(pattern = ".csv")
 result_files
 # [1] "res_GSE58249normLogF.csv" "res_GSE58249normLogM.csv"
 par(mfrow = c(2,2))
