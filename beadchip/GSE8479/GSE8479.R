@@ -5,21 +5,16 @@
 # GPL2700
 # Sentrix HumanRef-8 Expression BeadChip
 
+#### Loading packages ####
 library(Biobase)
 library(oligoClasses)
 library(oligo)
-library(arrayQualityMetrics)
 library(limma)
-# library(gplots)
 library(ggplot2)
-# library(geneplotter)
-library(RColorBrewer)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(matrixStats)
 library(genefilter)
-library(openxlsx)
 library(devtools)
 
 
@@ -29,9 +24,9 @@ if (!file.exists("data")) {
     dir.create("data")
     }
 
-data <- getGEO("GSE8479", destdir = ".")
-length(data)  # 1
-gse <- data[[1]]
+geo <- getGEO("GSE8479", destdir = "data")
+length(geo)  # 1
+gse <- geo[[1]]
 
 # exploring the data ----
 gse
@@ -56,10 +51,10 @@ dim(gse)
 # 24354       65
 
 head(pData(gse))
-exprs(gse)[1:5 , 1:2]
+exprs(gse)[1:5 , 1:2] # non log-transformed data
 
 head(fData(gse))  # GB_ACC will be used for annotation
-#                       ID         SequenceSource GB_ACC SPOT_ID
+#                          ID   SequenceSource    GB_ACC SPOT_ID
 # GI_10047089-S GI_10047089-S         RefSeq NM_014332.1      NA
 # GI_10047091-S GI_10047091-S         RefSeq NM_013259.1      NA
 # GI_10047093-S GI_10047093-S         RefSeq NM_016299.1      NA
@@ -68,28 +63,23 @@ head(fData(gse))  # GB_ACC will be used for annotation
 # GI_10047105-S GI_10047105-S         RefSeq NM_016352.1      NA
 
 
-# checking if the loaded data is already normalized ----
-head(pData(gse)$data_processing, 1)
-# [1] "Raw data (see related publication for normalization procedure)"
-
-
 
 #### Annotation ####
 library(org.Hs.eg.db)  # database stored at: dbfile(org.Hs.eg.db)
 
 # ref: https://support.bioconductor.org/p/119296/
-refseq <- sapply(strsplit(fData(gse)[,3], "\\."), "[", 1)
-head(refseq)
+GB_ACC <- sapply(strsplit(fData(gse)[,3], "\\."), "[", 1)
+head(GB_ACC)
 # [1] "NM_014332" "NM_013259" "NM_016299" "NM_016303" "NM_016305" "NM_016352"
 
-sum(is.na(refseq))  # 4
-refseq[is.na(refseq)] <- "NA"
+sum(is.na(GB_ACC))  # 4
+GB_ACC[is.na(GB_ACC)] <- "NA"
 # columns(org.Hs.eg.db)
 anno <- lapply(c("ENTREZID","SYMBOL","GENENAME"), 
-               function(x) mapIds(org.Hs.eg.db, refseq, x, "ACCNUM"))
+               function(x) mapIds(org.Hs.eg.db, GB_ACC, x, "ACCNUM"))
 
 annodf <- data.frame(PROBEID = fData(gse)[,1], 
-                     ACCNUM = refseq,
+                     ACCNUM = GB_ACC,
                      ENTREZID = anno[[1]],
                      SYMBOL = anno[[2]],
                      GENENAME = anno[[3]],
@@ -122,13 +112,112 @@ gse
 
 # filtering out probes with poor annotation (skipped) ----
 # contents are logged in "memo.Rmd"
+ids <- featureNames(gse)
+head(featureNames(gse))
+# [1] "GI_10047089-S" "GI_10047091-S" "GI_10047093-S" "GI_10047099-S" "GI_10047103-S"  "GI_10047105-S"
+
+library(illuminaHumanv1.db)  # memo: CHIPNAME: HumanWG6v1
+probe_quality <- unlist(mget(ids, illuminaHumanv1PROBEQUALITY, ifnotfound = NA))
+length(ids)  # [1] 24354
+length(probe_quality)  # [1] 24361
+
+# checking the cause of the length difference
+ids_df <- data.frame(ids = ids, original_ids = ids)
+pq_df <- data.frame(ids = names(probe_quality), pq_ids = names(probe_quality))
+pq_ids_df <-full_join(ids_df, pq_df)
+pq_ids_df[is.na(pq_ids_df$pq_ids),]
+#                 ids  original_ids pq_ids
+# 1492  GI_14141192-S GI_14141192-S   <NA>
+# 7608  GI_25453469-S GI_25453469-S   <NA>
+# 12538 GI_34304116-S GI_34304116-S   <NA>
+# 21010  GI_4507728-S  GI_4507728-S   <NA>
+# 21013  GI_4507744-S  GI_4507744-S   <NA>
+# 22035  GI_5016088-S  GI_5016088-S   <NA>
+# 23365  GI_7669491-S  GI_7669491-S   <NA>
+
+# nrow(pq_ids_df[is.na(pq_ids_df$pq_ids),])
+# [1] 7   
+
+#### memo:
+# the length difference probably comes from above 7 names
+# length(ids)  # [1] 24354
+# length(probe_quality)  # [1] 24361 
+
+# somehow the above 7 names are not counted as NA for "probe_quality" when check the following
+probe_quality[is.na(probe_quality)]
+# lysA pheA thrB trpF 
+# NA   NA   NA   NA
+
+table(is.na(probe_quality))
+# FALSE  TRUE 
+# 24357     4
+
+# removing all 7 names from original ids
+remove <- ids %in% pq_ids_df[is.na(pq_ids_df$pq_ids),]$ids
+table(remove)
+# FALSE  TRUE 
+# 24347     7
+ids2 <- ids[!remove]
+probe_quality2 <- unlist(mget(ids2, illuminaHumanv1PROBEQUALITY, ifnotfound = NA))
+length(ids2)  # [1] 24347
+length(probe_quality2)  # [1] 24347
+
+
+# skipped because this length difference may be causing error for "gse[!rem2,]" below
+table(probe_quality2)
+# probe_quality2
+# Bad        Good     Good***    Good****    No match     Perfect  Perfect*** Perfect**** 
+#     4040         767          24         159          88       17536         657        1072
+
+# cf.
+# probe_quality
+#       Bad        Good     Good***    Good****    No match     Perfect  Perfect***  Perfect**** 
+#     4040         767          24         160          88       17548         657          1073
+
+
+probes_remove <- probe_quality2 == "No match" | probe_quality2 == "Bad"  | is.na(probe_quality2)
+table(probes_remove)
+# probes_remove
+# FALSE  TRUE 
+# 20215  4132  sum == 24347
+
+# cf. when using "probe_quality"
+# FALSE  TRUE 
+# 20229  4132  sum == 24361
+
+gse_removed <- gse[!probes_remove,]
+
+
+# if is.na() === TRUE: remove NAs
+bad.sample <- colMeans(is.na(exprs(gse_removed))) > 0.8
+bad.gene <- rowMeans(is.na(exprs(gse_removed))) > 0.5
+gse_removed <- gse_removed[!bad.gene,!bad.sample]
+
+# Take a look to make a subset
+gse_removed
+# ExpressionSet (storageMode: lockedEnvironment)
+# assayData: 20221 features, 65 samples 
+# element names: exprs 
+# protocolData: none
+# phenoData
+# sampleNames: GSM210289 GSM210290 ... GSM210353 (65 total)
+# varLabels: title geo_accession ... Sample Group:ch1 (44 total)
+# varMetadata: labelDescription
+# featureData
+# featureNames: GI_10047089-S GI_10047091-S ... thrB (20221 total)
+# fvarLabels: PROBEID ACCNUM ... GENENAME (5 total)
+# fvarMetadata: Column Description labelDescription
+# experimentData: use 'experimentData(object)'
+# pubMedIds: 17520024 
+# Annotation: GPL2700
+gse <- gse_removed
+# ( annotation: OK)
 
 
 
 #### Tiding up the data ####
 #. Subselect the columns of interest ----
-dat <- gse
-pD.all <- pData(dat)
+pD.all <- pData(gse)
 head(pD.all, 3)
 tail(pD.all, 3)
 pD <- pD.all[, c("title", # individual
@@ -144,8 +233,6 @@ names(pD) <- c("individual", "gender")
 pD$individual <- gsub("Subject code ", "", pD$individual)
 pD$id <- gsub("EB", "", pD$individual) # individual
 pD$gender <- str_sub(pD$gender, 0, 1) # gender
-pD$timepoint <- ifelse(str_detect(pD$individual, "EB"), "pre", "post") # timepoint
-
 
 # extracting only older subjects have pre & post data ----
 library(readxl)
@@ -154,6 +241,7 @@ idfile <- read_xls("./supplements/Table_S1.xls", sheet = 2)  # who did the biops
                                                              # @ Supporting Information
 subjectids_after <- data.frame(idfile[1])
 
+
 keep <- pD %>% 
     filter(individual %in% subjectids_after$Subject.Code. | str_detect(individual, "EB"))
 keep$individual
@@ -161,33 +249,47 @@ keep$individual
 # [14] "A19"   "A4EB"  "A2EB"  "A22EB" "A5EB"  "A11EB" "A17EB" "A20EB" "A10EB" "A25EB" "A6EB"  "A8EB"  "A12EB"
 # [27] "A14EB" "A19EB"
 
-nrow(keep)  # 28
+nrow(keep)  # 28 --> nrow(pD) should be 28
 
 kp <- pD$individual %in% keep$individual
-dt <- dat[,kp]  # creating the dataset containing only elderly subjects mentioned above
-pData(dt) <- keep
-dim(dt)
+gse <- gse[,kp]  # creating the dataset containing only elderly subjects mentioned above
+pD <- pD[kp,]
+dim(pD)
+dim(gse)  # 28  3
 # Features  Samples 
-# 24354       28 
+# 20221       28 
 
-head(pData(dt), 3); tail(pData(dt), 3)
-# > head(pData(dt), 3)
+head(pD, 3); tail(pD, 3)
+#           individual gender  id
+# GSM210315         A2      F  A2
+# GSM210316         A5      F  A5
+# GSM210317        A17      M A17
+#           individual gender  id
+# GSM210351      A12EB      F A12
+# GSM210352      A14EB      M A14
+# GSM210353      A19EB      M A19
+
+pD$timepoint <- factor(ifelse(str_detect(pD$individual, "EB"), "pre", "post"))
+pD$timepoint <- relevel(pD$timepoint, ref = "pre")
+levels(pD$timepoint)
+# [1] "pre"  "post"
+
+head(pD, 3)
 # individual gender  id timepoint
 # GSM210315         A2      F  A2      post
 # GSM210316         A5      F  A5      post
 # GSM210317        A17      M A17      post
-# > tail(pData(dt), 3)
-# individual gender  id timepoint
-# GSM210351      A12EB      F A12       pre
-# GSM210352      A14EB      M A14       pre
-# GSM210353      A19EB      M A19       pre
+nrow(pD) # 28: OK
 
 
 
 #### Normalization ####
+head(pData(gse)$data_processing, 1)
+# [1] "Raw data (see related publication for normalization procedure)"
+     # "gse" is not normalized yet
+
 library(beadarray)
-eset <- dt
-norm <- normaliseIllumina(eset)  # quantile normalization
+norm <- normaliseIllumina(gse)  # quantile normalization
 # ?normaliseIllumina
 # cf. original study uses normalizeBetweenArrays() of limma.
 #     checked with norm_limma <- normalizeBetweenArrays(exprs(norm_limma), method = "quantile").
@@ -195,16 +297,31 @@ norm <- normaliseIllumina(eset)  # quantile normalization
 
 # comparing pre/post normalization
 par(mfrow = c(1,2))
-boxplot(log2(exprs(dt)), las = 2, cex.names = 0.5, ylab = expression(log [2](intensity)),
+boxplot(log2(exprs(gse)), las = 2, cex.axis = 0.7, ylab = expression(log [2](intensity)),
         outline = FALSE, main = "raw")
-boxplot(log2(exprs(norm)), las = 2, cex.names = 0.5, ylab = expression(log [2](intensity)),
+boxplot(log2(exprs(norm)), las = 2,  cex.axis=0.7, ylab = "",
         outline = FALSE, main = "normalized")
 
 
 
 #### Quality control ####
-exprs(dt)[1:5, 1:5]
-exprs(norm)[1:5, 1:5]
+exprs(gse)[1:5, 1:5]
+# GSM210315  GSM210316  GSM210317  GSM210318 GSM210319
+# GI_10047089-S 5726.23500 7315.88400 6586.29300 8897.02600 7697.3590
+# GI_10047091-S   98.85793   98.09677   79.31383   98.20589  108.5538
+# GI_10047093-S  483.68300  678.18030  671.47300  596.94870  575.3476
+# GI_10047099-S  126.38240  140.13030  119.27290  205.39560  124.6043
+# GI_10047103-S  762.17880 1231.18200  625.13700  947.06090  763.3690
+
+exprs(norm)[1:5, 1:5]  # non log-transformed data
+# GSM210315  GSM210316  GSM210317  GSM210318 GSM210319
+# GI_10047089-S 4749.95064 4813.36339 5272.25471 6981.80814 5693.1232
+# GI_10047091-S   91.22922   89.01135   76.44373   84.46068  101.6320
+# GI_10047093-S  412.42558  415.60395  548.23660  458.58666  471.0787
+# GI_10047099-S  114.17500  111.91306  110.69317  163.25491  115.0227
+# GI_10047103-S  634.04039  735.52104  510.47403  732.95137  615.4030
+
+
 
 # log2
 exp_raw <- log2(exprs(norm))
@@ -213,11 +330,11 @@ percentVar <- round(100*PCA_raw$sdev^2/sum(PCA_raw$sdev^2),1)
 sd_ratio <- sqrt(percentVar[2] / percentVar[1])
 
 #. PCA analysis ----
-head(pData(norm), 3)
+head(pD, 3)
 dataGG <- data.frame(PC1 = PCA_raw$x[,1], PC2 = PCA_raw$x[,2],
-                     individual = pData(norm)$id,
-                     gender = pData(norm)$gender,
-                     timepoint = pData(norm)$timepoint
+                     individual = pD$id,
+                     gender = pD$gender,
+                     timepoint = pD$timepoint
                      )
 ggplot(dataGG, aes(PC1, PC2)) +
     geom_point(aes(colour = timepoint)) +
@@ -229,7 +346,7 @@ ggplot(dataGG, aes(PC1, PC2)) +
 # filter out lowly expressed genes
 # “soft” intensity based filtering here, since this is recommended by the limma
 #. Histogram ----
-medians <- rowMedians(log2(Biobase::exprs(norm)))
+medians <- rowMedians(log2(exprs(norm)))
 par(mfrow=c(1,1))
 hist_res <- hist(medians, 100, col = "cornsilk1", freq = FALSE,
                  main = "Histogram of the median intensities",
@@ -264,93 +381,62 @@ hist_res <- hist(medians, 100, col = "cornsilk1", freq = FALSE,
 
 
 
-
-
-
 ##### Differential Expression nalysis ####
-head(pData(norm), 3)
-individual <- Biobase::pData(norm)$id
-timepoint <- Biobase::pData(norm)$timepoint
-gender <- Biobase::pData(norm)$gender
-
-# normData (without supplement, health)
-male <- individual[gender == "M"]
-t_male <- timepoint[gender == "M"]
-design_male <- model.matrix(~ 0 + t_male + male)
-colnames(design_male)[1:2] <- c("post", "pre")
-rownames(design_male) <- male
-
-female <- individual[gender == "F"]
-t_female <- timepoint[gender == "F"]
-design_female <- model.matrix(~ 0 + t_female + female)
-colnames(design_female)[1:2] <- c("post", "pre")
-rownames(design_female) <- female
-
-# inspect the design matrices
-design_male[1:5, 1:5]; design_female[1:5, 1:5]
-design_male[1:5, 1:5]
-# > design_male[1:5, 1:5]
-#       post pre maleA17 maleA19 maleA20
-# A17    1   0       1       0       0
-# A14    1   0       0       0       0
-# A25    1   0       0       0       0
-# A20    1   0       0       0       1
-# A22    1   0       0       0       0
-# > design_female[1:5, 1:5]
-#       post pre femaleA11 femaleA12 femaleA2
-# A2     1   0         0         0        1
-# A5     1   0         0         0        0
-# A6     1   0         0         0        0
-# A10    1   0         0         0        0
-# A11    1   0         1         0        0
+head(pD, 3)
+individual <- pD$id
+timepoint <- pD$timepoint
+gender <- pD$gender
 
 
-# Contrasts and hypotheses tests: all genes ----
-contrast_matrix_male <- makeContrasts(post-pre, levels = design_male)
-fit_male <- eBayes(
-    contrasts.fit(
-        lmFit(
-            norm[,gender == "M"],
-            design = design_male),
-        contrast_matrix_male))
+#### lmFit() ####
+# make sure to use norm not gse for data
+exprs(norm) <- log2(exprs(norm))
+for (i in unique(gender)) {
+    print(i)
+    subjects <- individual[gender == i]
+    pre_post <- timepoint[gender == i]
+    data <- norm[, gender == i]  # using norm not gse: OK 
+    
+    design <- model.matrix(~ 0 + pre_post + subjects)
+    colnames(design)[1:2] <- c("pre", "post")
+    rownames(design) <- subjects
+    fit <- lmFit(data, design)
+    contrast <- makeContrasts(post-pre, levels = design)
+    contr.fit <- eBayes(contrasts.fit(fit, contrast))
+    
+    #### Results ####
+    table <- topTable(contr.fit, coef = 1, number = Inf)
+    write.csv(table, file = paste0("res_GSE58249normLog", i, ".csv"))
+}
 
-contrast_matrix_female <- makeContrasts(post-pre, levels = design_female)
-fit_female <- eBayes(
-    contrasts.fit(
-        lmFit(
-            norm[,gender == "F"],
-            design = design_female),
-        contrast_matrix_female))
 
-
-#### Extracting results: topTable() ####
+#### Visualizing results ####
 library(RColorBrewer)
-table_male <- topTable(fit_male, number = Inf)
-head(table_male)
-par(mfrow = c(1,2))
-hist(table_male$P.Value, col = brewer.pal(3, name = "Set2")[1], xlab = "male p-values")
-hist(table_male$adj.P.Val, col = brewer.pal(3, name = "Set2")[2], xlab = "male adj.p-values")
+result_files <- list.files(pattern = "normLog..csv")
+result_files
+# [1] "res_GSE58249normLogF.csv" "res_GSE58249normLogM.csv"
+par(mfrow = c(2,2))
 
-table_female <- topTable(fit_female, number = Inf)
-head(table_female)
-hist(table_female$P.Value, col = brewer.pal(3, name = "Set2")[1], xlab = "female p-values")
-hist(table_female$adj.P.Val, col = brewer.pal(3, name = "Set2")[2], xlab = "female p-values")
+for (i in 1:length(result_files)) {
+    file <- result_files[i]
+    results <- read.csv(file)
+    group <- str_sub(file, -5, -5) 
+    
+    ## histgram ##
+    hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
+         main = paste(group, "Pval"), xlab  = NULL)
+    hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
+         main = paste(group, "adj.Pval"), xlab = NULL)
+    
+    ## some numbers ##
+    cat(group, "\n")
+    cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
+    cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
+}
+
+# to explore more (ex)
+# tail(subset(results, adj.P.Val < 0.05))
 
 
-#. Multiple testing FDR, and comparison with results from the original paper
-nrow(subset(table_male, P.Value < 0.05))  # 5464 
-tail(subset(table_male, P.Value < 0.05))
-nrow(subset(table_male, adj.P.Val < 0.05))  # 161
-nrow(subset(table_male, adj.P.Val < 0.01)) # 0
-tail(subset(table_male, adj.P.Val < 0.01))
 
-nrow(subset(table_female, P.Value < 0.05))  # 6416
-tail(subset(table_female, P.Value < 0.05))
-nrow(subset(table_female, adj.P.Val < 0.05))  # 1501
-nrow(subset(table_female, adj.P.Val < 0.01))  # 92
-tail(subset(table_female, adj.P.Val < 0.01))
-
-
-#### writing out the result ####
-write.csv(table_male, file = "res_GSE8479Mnew.csv")
-write.csv(table_female, file = "res_GSE8479Fnew.csv")

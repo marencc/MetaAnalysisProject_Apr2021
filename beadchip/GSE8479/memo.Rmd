@@ -40,49 +40,37 @@ about Sentrix hu6 & hu8: https://www.illumina.com/documents/products/techbulleti
 
 
 ### problems
-**1. couldn't filtering out poorly annotated probes**  
-skipped the following step due to an error: the length difference between `id3` & `qual2` probably cause the error.  
-```{r}
-ids3 <- featureNames(gse)
-head(featureNames(gse))
-# [1] "GI_10047089-S" "GI_10047091-S" "GI_10047093-S" "GI_10047099-S" "GI_10047103-S"
-# [6] "GI_10047105-S"
-
-library(illuminaHumanv1.db)
-memo: CHIPNAME: HumanWG6v1
-qual2 <- unlist(mget(ids3, illuminaHumanv1PROBEQUALITY, ifnotfound = NA))
-
-length(unique(ids3))  # [1] 24354
-length(qual2)  # [1] 24361
-# skipped because this length difference may be causing error for "gse[!rem2,]" below
-table(qual2)
-# qual2
-#       Bad        Good     Good***    Good****    No match     Perfect  Perfect***  Perfect**** 
-#     4040         767          24         160          88       17548         657          1073
-
-rem2 <- qual2 == "No match" | qual2 == "Bad" | is.na(qual2)
-table(rem2)
-rem2
-# FALSE  TRUE 
-# 20229  4132  sum == 24361
-
-gse_rem2 <- gse[!rem2,]
-
-
-# if is.na() === TRUE: remove NAs
-bad.sample <- colMeans(is.na(exprs(gse_rem2))) > 0.8
-bad.gene <- rowMeans(is.na(exprs(gse_rem2))) > 0.5
-gse_rem2 <- gse_rem2[!bad.gene,!bad.sample]
-
-# Take a look to make a subset
-gse_rem2
-varLabels(gse_rem2)
-```
+**1. Normalization**  
+The original study `limma` for normalization whereas our analysis used `normalizeIllumina()`. (`normalizeBetweenArrays()` didn't work) The outputs from both function seemed to be same. Suppose, there is no problems choosing `normalizeIllumina()` here. 
 <br>
 
-**2. Normalization**  
-The original study states that they used `limma` for normalization. But my analysis used `normalizeIllumina()` instead. The outputs from both function seemed to be same. Suppose, there is no problems choosing `normalizeIllumina()` here. 
+
+## Results
+7/12/2021  
+**log-transformed**
+F 
+p < 0.05: 5747 
+adj.P < 0.05: 2373 
+adj.P < 0.01: 609 
+
+M 
+p < 0.05: 5005 
+adj.P < 0.05: 1420 
+adj.P < 0.01: 184
+
 <br>
+7/12/2021  
+**non log-transformed**  
+F 
+p < 0.05: 5399 
+adj.P < 0.05: 1327 
+adj.P < 0.01: 73 
+
+M 
+p < 0.05: 4513 
+adj.P < 0.05: 173 
+adj.P < 0.01: 0 
+
 
 
 
