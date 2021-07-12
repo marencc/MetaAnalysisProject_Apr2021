@@ -12,14 +12,11 @@
 library(Biobase)
 library(oligoClasses)
 library(oligo)
-# library(arrayQualityMetrics)
 library(limma)
 library(ggplot2)
-library(RColorBrewer)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(openxlsx)
 library(devtools)
 
 
@@ -256,12 +253,13 @@ for (i in 1:length(result_files)) {
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
          main = paste(group, "Pval"), xlab  = NULL)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "Pval"), xlab = NULL)
+         main = paste(group, "adj.Pval"), xlab = NULL)
 
     ## some numbers ##
     cat(group, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
-    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
+    cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
     }
 
 # to explore more (ex)
