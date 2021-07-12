@@ -246,12 +246,13 @@ for (i in unique(group)) {
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
     write.csv(table, file = paste0("res_GSE58249re", i, ".csv"))
+    head(table)
 }
 
 
 #### Visualizing results ####
 library(RColorBrewer)
-result_files <- list.files(pattern = "re...csv")
+result_files <- list.files(pattern = ".csv")
 result_files
 # "res_GSE58249reFA.csv" "res_GSE58249reFR.csv" "res_GSE58249reMA.csv" "res_GSE58249reMR.csv"
 par(mfrow = c(2,2))
