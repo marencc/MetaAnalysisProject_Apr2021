@@ -281,7 +281,8 @@ dim(exprs(manfiltered))  # 13907    70
 
 
 #### Annotation of the transcript clusters ####
-columns(hugene11sttranscriptcluster.db)
+library(hugene11sttranscriptcluster.db)
+# columns(hugene11sttranscriptcluster.db)
 # keytypes(hugene11sttranscriptcluster.db)
 # head(keys(hugene11sttranscriptcluster.db, keytype="ENTREZID"))
 # ls("package:hugene11sttranscriptcluster.db")
@@ -292,10 +293,18 @@ anno <- AnnotationDbi::select(hugene11sttranscriptcluster.db,
                               columns = c("SYMBOL", "GENENAME"),
                               keytype = "ENTREZID")
 head(anno)
+#    ENTREZID     SYMBOL                           GENENAME
+# 1 100009676 ZBTB11-AS1             ZBTB11 antisense RNA 1
+# 2     10000       AKT3      AKT serine/threonine kinase 3
+# 3     10001       MED6         mediator complex subunit 6
+# 4 100033413 SNORD116-1 small nucleolar RNA, C/D box 116-1
+# 5 100033414 SNORD116-2 small nucleolar RNA, C/D box 116-2
+# 6 100033416 SNORD116-4 small nucleolar RNA, C/D box 116-4
+
 
 table(is.na(anno))
 # FALSE  TRUE 
-# 69926 10750 
+# 41601   120  
 
 
 anno <- subset(anno, !is.na(SYMBOL))
@@ -329,12 +338,11 @@ head(anno_filtered)
 
 probe_stats <- anno_filtered
 nrow(probe_stats) # 0: clusters that map to multiple gene symbols → remove
-
 # remove above IDs(probe_stats)
-ids_to_exlude <- (featureNames(withsymbols) %in% probe_stats$PROBEID)
+ids_to_exlude <- (featureNames(withsymbols) %in% probe_stats$ENTREZID)
 table(ids_to_exlude)
 # FALSE
-# 0
+# 13847
 
 final <- subset(withsymbols, !ids_to_exlude)
 validObject(final)
@@ -347,14 +355,17 @@ head(anno, 3)
 # generate a column PROBEID in fData(final) and
 # assign the row names of fData(final) to it:
 fData(final)$PROBEID <- featureNames(final)
-fData(final)$ENTREZID <- anno[match(fData(final)$ENTREZID,anno$ENTREZID), 1]  # adding anno$ENTREZID
-
+fData(final)$ENTREZID <- anno[match(fData(final)$SPOT_ID, anno$ENTREZID), 1]  # adding anno$ENTREZID
+head(fData(final))
 
 # left-join fData(final) with anno
 fData(final) <- left_join(fData(final), anno, by = "ENTREZID")
 head(fData(final))
 
+fData(final) <- fData(final)[, c("PROBEID", "ENTREZID", "SYMBOL", "GENENAME")]
 rownames(fData(final)) <- fData(final)$PROBEID
+head(fData(final))
+
 validObject(final)
 dim(final)
 # Features  Samples 
@@ -389,6 +400,7 @@ for (i in unique(gender)) {
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
     write.csv(table, file = paste0("res_GSE117525re", i, ".csv"))
+    print(head(table))
 }
 
 
@@ -407,14 +419,16 @@ for (i in 1:length(result_files)) {
     
     ## histgram ##
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
-         main = paste(group, "Pval"), xlab  = NULL)
+         main = paste(file, "Pval"), xlab  = NULL)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "adj.Pval"), xlab = NULL)
+         main = paste(file, "adj.Pval"), xlab = NULL)
     
     ## some numbers ##
-    cat(group, "\n")
+    cat(file, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
-    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n\n")
+    cat("p < 0.01:", nrow(subset(results, P.Value < 0.01)), "\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
+    cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
 }
 
 # to explore more (ex)

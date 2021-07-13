@@ -34,12 +34,16 @@ library(hugene11sttranscriptcluster.db)
 ```
 
 
-## Results
-
-F 
+## Results  
+7/12/2021  
+res_GSE117525reF.csv 
 p < 0.05: 1604 
+p < 0.01: 507 
 adj.P < 0.05: 6 
+adj.P < 0.01: 0 
 
-M 
+res_GSE117525reM.csv 
 p < 0.05: 2031 
-adj.P < 0.05: 194
+p < 0.01: 828 
+adj.P < 0.05: 194 
+adj.P < 0.01: 30
