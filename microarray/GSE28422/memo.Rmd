@@ -36,6 +36,64 @@ output: html_document
 
 
 
+## Results
+7/12/2021  
+(log-transformed data)  
+res_GSE28422reFO.csv 
+p < 0.05: 4185 
+p < 0.01: 1167 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422reFY.csv 
+p < 0.05: 3151 
+p < 0.01: 783 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422reMO.csv 
+p < 0.05: 3237 
+p < 0.01: 661 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422reMY.csv 
+p < 0.05: 1502 
+p < 0.01: 285 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0
+
+<br>
+
+7/10/2021  
+(non log-transfomrmed data)  
+res_GSE28422FO.csv 
+p < 0.05: 5072 
+p < 0.01: 1719 
+adj.P < 0.05: 30 
+adj.P < 0.05: 1 
+
+res_GSE28422FY.csv 
+p < 0.05: 3512 
+p < 0.01: 940 
+adj.P < 0.05: 1 
+adj.P < 0.05: 0 
+
+res_GSE28422MO.csv 
+p < 0.05: 3813 
+p < 0.01: 927 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422MY.csv 
+p < 0.05: 1363 
+p < 0.01: 209 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+
+
+
 
 
 

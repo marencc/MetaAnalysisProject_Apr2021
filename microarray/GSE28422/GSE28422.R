@@ -1,15 +1,13 @@
 #### GSE28422: Resistance ####
-#### List of packages required for the workflow ####
+#### Loading packages ####
 library(Biobase)
 library(oligoClasses)
 library(oligo)
-# library(arrayQualityMetrics)
 library(limma)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(openxlsx)
 library(devtools)
 
 
@@ -110,6 +108,11 @@ dim(gse)
 
 pD$group <- paste0(str_sub(pD$gender, 1, 1), str_sub(pD$age, 1, 1))
 head(pD, 3)
+#                               title   age gender timepoint  training description id biopsy group
+# GSM702357 T1_Pre_Male_Young (81373) Young   Male       pre Untrained        T1_4 S4     T1    MY
+# GSM702358 T1_Pre_Male_Young (81379) Young   Male       pre Untrained        T1_6 S6     T1    MY
+# GSM702359 T1_Pre_Male_Young (81390) Young   Male       pre Untrained        T1_9 S9     T1    MY
+
 
 
 #### Normalization (skipped) ####
@@ -193,18 +196,18 @@ no_of_samples
 # 12 12 12 16
 
 samples_cutoff <- min(no_of_samples)
-idx_man_threshold <- apply(exprs(gse), 1,
+idx_man_threshold <- apply(log2(exprs(gse)), 1,
                            function(x){
                                sum(x > man_threshold) >= samples_cutoff})
 table(idx_man_threshold)
 # idx_man_threshold
 # FALSE  TRUE 
-# 94 54581
+# 5109 49566
 
 manfiltered <- subset(gse, idx_man_threshold)
 
 dim(exprs(gse))  # 54675    52
-dim(exprs(manfiltered))  # 54581    52
+dim(exprs(manfiltered))  # 49566    52
 
 
 
@@ -212,11 +215,11 @@ dim(exprs(manfiltered))  # 54581    52
 library(hgu133plus2.db)
 anno <- AnnotationDbi::select(hgu133plus2.db,
                               keys = (featureNames(manfiltered)),
-                              columns = c("SYMBOL", "GENENAME"),
+                              columns = c("SYMBOL", "GENENAME", "ENTREZID"),
                               keytype = "PROBEID")
 table(is.na(anno))
 # FALSE   TRUE 
-# 154032  20652
+# 185169  26523
 
 
 anno <- subset(anno, !is.na(SYMBOL))
@@ -224,12 +227,12 @@ sum(is.na(anno$SYMBOL)) # 0
 nosymbols <- !(featureNames(manfiltered) %in% anno$PROBEID)
 table(nosymbols)
 # FALSE  TRUE 
-# 44255 10326
+# 40725  8841
 
 withsymbols <- subset(manfiltered, !nosymbols)
 dim(withsymbols)
 # Features  Samples 
-# 44255       52
+# 40725       52
 
 
 #. Removing multiple mappings ----
@@ -247,17 +250,17 @@ anno_filtered <- filter(anno_summarized, no_of_matches > 1)
 head(anno_filtered)
 
 probe_stats <- anno_filtered
-nrow(probe_stats) # 2226: clusters that map to multiple gene symbols → remove
+nrow(probe_stats) # 2058: clusters that map to multiple gene symbols → remove
 
 # remove above IDs(probe_stats)
 ids_to_exlude <- (featureNames(withsymbols) %in% probe_stats$PROBEID)
 table(ids_to_exlude)
 # FALSE  TRUE 
-# 42029  2226 
+# 38667  2058 
 
 final <- subset(withsymbols, !ids_to_exlude)
 validObject(final)
-dim(final)  # 42029  52
+dim(final)  # 38667  52
 
 
 # also exclude them from the feature data anno
@@ -272,7 +275,7 @@ rownames(fData(final)) <- fData(final)$PROBEID
 validObject(final)
 dim(final)
 # Features  Samples 
-# 42029       52
+# 38667       52
 
 
 
@@ -283,6 +286,7 @@ timepoint <- pD$timepoint
 group <- pD$group
 
 #### lmFit() ####
+exprs(final) <- log2(exprs(final))
 for (i in unique(group)) {
     print(i)
     subjects <- individual[group == i]
@@ -298,7 +302,8 @@ for (i in unique(group)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE28422", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE28422re", i, ".csv"))
+    print(head(table))
 }
 
 
@@ -316,14 +321,16 @@ for (i in 1:length(result_files)) {
     
     ## histgram ##
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
-         main = paste(group, "Pval"), xlab  = NULL)
+         main = paste(file, "Pval"), xlab  = NULL)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "Pval"), xlab = NULL)
+         main = paste(file, "adj.Pval"), xlab = NULL)
     
     ## some numbers ##
-    cat(group, "\n")
+    cat(file, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
-    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n\n")
+    cat("p < 0.01:", nrow(subset(results, P.Value < 0.01)), "\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
 }
 
 # to explore more (ex)
