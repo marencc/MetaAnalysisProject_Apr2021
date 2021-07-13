@@ -27,84 +27,196 @@ In our analysis, we compared pre & post of exercise training within a group. Gro
 
 
 ## Results  
-FA
-p < 0.05: 1093
-adj.P < 0.05: 0
-
-FC
-p < 0.05: 4295
-adj.P < 0.05: 0
-
-FD
-p < 0.05: 3373
-adj.P < 0.05: 0
-
-FE
-p < 0.05: 3144
-adj.P < 0.05: 0
-
-FF
-p < 0.05: 848
-adj.P < 0.05: 0
- 
-MA
-p < 0.05: 663
-adj.P < 0.05: 0
-
-MC
-p < 0.05: 815
-adj.P < 0.05: 0
-
-MD
-p < 0.05: 1927
-adj.P < 0.05: 0
-
-ME
-p < 0.05: 3895
-adj.P < 0.05: 2
-
-MF
-p < 0.05: 2817
-adj.P < 0.05: 0
-
-
 **after adding exprs(final) <- log2(exprs(final))**  
-FA 
+7/12/2021  
+res_GSE48278reFA.csv 
 p < 0.05: 656 
+p < 0.01: 82 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-FC 
+res_GSE48278reFC.csv 
 p < 0.05: 3246 
+p < 0.01: 417 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-FD 
+res_GSE48278reFD.csv 
 p < 0.05: 3006 
+p < 0.01: 413 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-FE 
+res_GSE48278reFE.csv 
 p < 0.05: 2824 
+p < 0.01: 466 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-FF 
+res_GSE48278reFF.csv 
 p < 0.05: 176 
+p < 0.01: 10 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-MA 
+res_GSE48278reMA.csv 
 p < 0.05: 643 
+p < 0.01: 67 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-MC 
+res_GSE48278reMC.csv 
 p < 0.05: 518 
+p < 0.01: 57 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-MD 
+res_GSE48278reMD.csv 
 p < 0.05: 1470 
+p < 0.01: 188 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-ME 
+res_GSE48278reME.csv 
 p < 0.05: 3184 
+p < 0.01: 556 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0 
 
-MF 
+res_GSE48278reMF.csv 
 p < 0.05: 1962 
+p < 0.01: 207 
 adj.P < 0.05: 0 
+adj.P < 0.01: 0
+
+<br>
+
+cf. Using `gse`  
+res_GSE48278gseFA.csv 
+p < 0.05: 650 
+p < 0.01: 77 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseFC.csv 
+p < 0.05: 3247 
+p < 0.01: 416 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseFD.csv 
+p < 0.05: 3012 
+p < 0.01: 417 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseFE.csv 
+p < 0.05: 2826 
+p < 0.01: 468 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseFF.csv 
+p < 0.05: 171 
+p < 0.01: 10 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseMA.csv 
+p < 0.05: 644 
+p < 0.01: 69 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseMC.csv 
+p < 0.05: 519 
+p < 0.01: 55 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseMD.csv 
+p < 0.05: 1472 
+p < 0.01: 190 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseME.csv 
+p < 0.05: 3191 
+p < 0.01: 564 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278gseMF.csv 
+p < 0.05: 1958 
+p < 0.01: 210 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+
+**memo: Similar results with the one using `norm` data**  
+<br>
+
+
+**non log-transformed data**
+res_GSE48278FA.csv 
+p < 0.05: 1093 
+p < 0.01: 120 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278FC.csv 
+p < 0.05: 4295 
+p < 0.01: 1062 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278FD.csv 
+p < 0.05: 3373 
+p < 0.01: 686 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278FE.csv 
+p < 0.05: 3144 
+p < 0.01: 737 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278FF.csv 
+p < 0.05: 848 
+p < 0.01: 62 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278MA.csv 
+p < 0.05: 663 
+p < 0.01: 65 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278MC.csv 
+p < 0.05: 815 
+p < 0.01: 77 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278MD.csv 
+p < 0.05: 1927 
+p < 0.01: 420 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+res_GSE48278ME.csv 
+p < 0.05: 3895 
+p < 0.01: 1212 
+adj.P < 0.05: 2 
+adj.P < 0.01: 0 
+
+res_GSE48278MF.csv 
+p < 0.05: 2817 
+p < 0.01: 667 
+adj.P < 0.05: 0 
+adj.P < 0.01: 0 
+
+
+

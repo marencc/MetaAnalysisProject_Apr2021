@@ -3,13 +3,11 @@
 library(Biobase)
 library(oligoClasses)
 library(oligo)
-# library(arrayQualityMetrics)
 library(limma)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(openxlsx)
 library(devtools)
 
 
@@ -126,14 +124,14 @@ head(pData(gse)$data_processing, 1)
 
 
 #### checking data intensities
-for (i in unique(pD$group)) {
-    check <- gse[pD$group == i,]
-    oligo::boxplot(log2(exprs(check)), target = "core",
-                   main = paste(i, "Boxplot of log2-intensitites for the raw data"),
-                   outline = FALSE,
-                   las = 2,
-                   cex.axis=0.7)    
-    }
+# for (i in unique(pD$group)) {
+#     check <- gse[pD$group == i,]
+#     oligo::boxplot(log2(exprs(check)), target = "core",
+#                    main = paste(i, "Boxplot of log2-intensitites for the raw data"),
+#                    outline = FALSE,
+#                    las = 2,
+#                    cex.axis=0.7)    
+#     }
 oligo::boxplot(log2(exprs(gse)), target = "core",
                main = "Boxplot of log2-intensitites for the raw data",
                outline = FALSE,
@@ -141,6 +139,7 @@ oligo::boxplot(log2(exprs(gse)), target = "core",
                cex.axis=0.7)
 # memo: based on the boxplot, the data doesn't seem to be normalized.
 
+# generating normalized data to compare the results
 library(affyPLM)
 norm <- normalize.ExpressionSet.quantiles(gse)
 exprs(norm)[1:5, 1:5]
@@ -204,7 +203,8 @@ for (i in 1:length(data_types)) {
         ylab(paste0("PC2, VarExp: ", percentVar[2], "%")))
     
     }
-# memo: based on the PCA plots, using "norm" data would work well
+# memo: the difference in look might be because of the scale difference
+# below uses "norm" data. To check the results of "gse" data, try "gse.R".
 
 
 
@@ -246,11 +246,11 @@ dim(exprs(manfiltered))  # 49164    94
 library(hgu133plus2.db)
 anno <- AnnotationDbi::select(hgu133plus2.db,
                               keys = (featureNames(manfiltered)),
-                              columns = c("SYMBOL", "GENENAME"),
+                              columns = c("SYMBOL", "GENENAME", "ENTREZID"),
                               keytype = "PROBEID")
 table(is.na(anno))
 # FALSE   TRUE 
-# 140037  17466
+# 183805  26199 
 
 anno <- subset(anno, !is.na(SYMBOL))
 sum(is.na(anno$SYMBOL)) # 0
@@ -280,7 +280,7 @@ anno_filtered <- filter(anno_summarized, no_of_matches > 1)
 head(anno_filtered)
 
 probe_stats <- anno_filtered
-nrow(probe_stats) # 2227: clusters that map to multiple gene symbols → remove
+nrow(probe_stats) # 2069: clusters that map to multiple gene symbols → remove
 
 # remove above IDs(probe_stats)
 ids_to_exlude <- (featureNames(withsymbols) %in% probe_stats$PROBEID)
@@ -334,19 +334,20 @@ for (i in unique(group)) {
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
     write.csv(table, file = paste0("res_GSE48278re", i, ".csv"))
+    print(head(table))
 }
 
 
 #### Visualizing results ####
 library(RColorBrewer)
-result_files <- list.files(pattern = "re...csv")
+result_files <- list.files(pattern = ".csv")
 result_files
 # [1] "res_GSE48278FA.csv" "res_GSE48278FC.csv" "res_GSE48278FD.csv"
 # [4] "res_GSE48278FE.csv" "res_GSE48278FF.csv" "res_GSE48278MA.csv"
 # [7] "res_GSE48278MC.csv" "res_GSE48278MD.csv" "res_GSE48278ME.csv"
 # [10] "res_GSE48278MF.csv"
 
-par(mfrow = c(2,2))
+par(mfrow = c(2,5))
 
 for (i in 1:length(result_files)) {
     file <- result_files[i]
@@ -355,14 +356,16 @@ for (i in 1:length(result_files)) {
     
     ## histgram ##
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
-         main = paste(group, "Pval"), xlab  = NULL)
+         main = paste(file, "Pval"), xlab  = NULL, cex.main = 0.8)
     hist(results$adj.P.Val, col = brewer.pal(3, name = "Set2")[2],
-         main = paste(group, "adj.Pval"), xlab = NULL)
+         main = paste(file, "adj.Pval"), xlab = NULL, cex.main = 0.8)
     
     ## some numbers ##
-    cat(group, "\n")
+    cat(file, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
-    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n\n")
+    cat("p < 0.01:", nrow(subset(results, P.Value < 0.01)), "\n")
+    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
+    cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
 }
 
 # to explore more (ex)
