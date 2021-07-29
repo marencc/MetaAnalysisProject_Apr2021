@@ -104,16 +104,16 @@ EnhancedVolcano(GSE8479M,
 - 13 female, 5 male
 
 ```{r GSE58249}
-GSE58249FAres <- read.csv("beadchip/GSE58249/res_GSE58249reFA.csv", header = T)
-GSE58249FRres <- read.csv("beadchip/GSE58249/res_GSE58249reFR.csv", header = T)
-GSE58249MAres <- read.csv("beadchip/GSE58249/res_GSE58249reMA.csv", header = T)
-GSE58249MRres <- read.csv("beadchip/GSE58249/res_GSE58249reMR.csv", header = T)
+GSE58249FA <- read.csv("beadchip/GSE58249/res_GSE58249reFA.csv", header = T)
+GSE58249FR <- read.csv("beadchip/GSE58249/res_GSE58249reFR.csv", header = T)
+GSE58249MA <- read.csv("beadchip/GSE58249/res_GSE58249reMA.csv", header = T)
+GSE58249MR <- read.csv("beadchip/GSE58249/res_GSE58249reMR.csv", header = T)
 ```
 
 
-```{r GSE58249FAres volcano}
-EnhancedVolcano(GSE58249FAres,
-                lab = GSE58249FAres$SYMBOL,
+```{r GSE58249FA volcano}
+EnhancedVolcano(GSE58249FA,
+                lab = GSE58249FA$SYMBOL,
                 # selectLab = 'Peptide9A',
                 x = 'logFC',
                 y = 'adj.P.Val',
@@ -134,7 +134,7 @@ EnhancedVolcano(GSE58249FAres,
                 labCol = 'black',
                 labFace = 'bold') +
   
-                labs(title = "", ##一番上のタイトル
+                labs(title = "GSE58249FA", ##一番上のタイトル
                      titleLabSize = 25, ##タイトルのサイズ
                      subtitle = "pre vs post", ##タイトル下のサブタイトル
                      caption = "") ##x軸の下くらいに文字を入れられる
@@ -145,9 +145,9 @@ EnhancedVolcano(GSE58249FAres,
 ```
 
 
-```{r GSE58249FRres volcano}
-EnhancedVolcano(GSE58249FRres,
-                lab = GSE58249FRres$SYMBOL,
+```{r GSE58249FR volcano}
+EnhancedVolcano(GSE58249FR,
+                lab = GSE58249FR$SYMBOL,
                 # selectLab = 'Peptide9A',
                 x = 'logFC',
                 y = 'adj.P.Val',
@@ -168,7 +168,7 @@ EnhancedVolcano(GSE58249FRres,
                 labCol = 'black',
                 labFace = 'bold') +
   
-                labs(title = "", ##一番上のタイトル
+                labs(title = "GSE58249FR", ##一番上のタイトル
                      titleLabSize = 25, ##タイトルのサイズ
                      subtitle = "pre vs post", ##タイトル下のサブタイトル
                      caption = "") ##x軸の下くらいに文字を入れられる
@@ -179,9 +179,9 @@ EnhancedVolcano(GSE58249FRres,
 ```
 
 
-```{r GSE58249MAres volcano}
-EnhancedVolcano(GSE58249MAres,
-                lab = GSE58249MAres$SYMBOL,
+```{r GSE58249MA volcano}
+EnhancedVolcano(GSE58249MA,
+                lab = GSE58249MA$SYMBOL,
                 # selectLab = 'Peptide9A',
                 x = 'logFC',
                 y = 'adj.P.Val',
@@ -202,7 +202,7 @@ EnhancedVolcano(GSE58249MAres,
                 labCol = 'black',
                 labFace = 'bold') +
   
-                labs(title = "", ##一番上のタイトル
+                labs(title = "GSE58249MA", ##一番上のタイトル
                      titleLabSize = 25, ##タイトルのサイズ
                      subtitle = "pre vs post", ##タイトル下のサブタイトル
                      caption = "") ##x軸の下くらいに文字を入れられる
@@ -214,9 +214,9 @@ EnhancedVolcano(GSE58249MAres,
 ```
 
 
-```{r GSE58249MRres volcano}
-EnhancedVolcano(GSE58249MRres,
-                lab = GSE58249MRres$SYMBOL,
+```{r GSE58249MR volcano}
+EnhancedVolcano(GSE58249MR,
+                lab = GSE58249MR$SYMBOL,
                 # selectLab = 'Peptide9A',
                 x = 'logFC',
                 y = 'P.Value',
@@ -237,7 +237,7 @@ EnhancedVolcano(GSE58249MRres,
                 labCol = 'black',
                 labFace = 'bold') +
   
-                labs(title = "", ##一番上のタイトル
+                labs(title = "GSE58249MR", ##一番上のタイトル
                      titleLabSize = 25, ##タイトルのサイズ
                      subtitle = "pre vs post", ##タイトル下のサブタイトル
                      caption = "") ##x軸の下くらいに文字を入れられる
@@ -286,7 +286,7 @@ EnhancedVolcano(GSE139258F,
                 labCol = 'black',
                 labFace = 'bold') +
   
-                labs(title = "", ##一番上のタイトル
+                labs(title = "GSE139258F", ##一番上のタイトル
                      titleLabSize = 25, ##タイトルのサイズ
                      subtitle = "pre vs post", ##タイトル下のサブタイトル
                      caption = "") ##x軸の下くらいに文字を入れられる
@@ -321,7 +321,7 @@ EnhancedVolcano(GSE139258M,
                 labCol = 'black',
                 labFace = 'bold') +
   
-                labs(title = "", ##一番上のタイトル
+                labs(title = "GSE139258M", ##一番上のタイトル
                      titleLabSize = 25, ##タイトルのサイズ
                      subtitle = "pre vs post", ##タイトル下のサブタイトル
                      caption = "") ##x軸の下くらいに文字を入れられる
