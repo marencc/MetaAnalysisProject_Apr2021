@@ -1,0 +1,41 @@
+---
+title: "GSE14901 memo"
+author: "Emma"
+date: "7/29/2021"
+output: html_document
+---
+
+## Summary
+
+**Title:** Limb Immobilization Induces a Coordinate Down-Regulation of Mitochondrial and Other Metabolic Pathways in Men and Women
+
+- rawdata unavailable -- processed data from GEO
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE14901
+- pubmed: https://pubmed.ncbi.nlm.nih.gov/19654872/
+- fulltext: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2716517/
+- Healthy men and women (n = 24)
+- two weeks of unilateral limb immobilization
+- muscle biopsies: before, after 48 hours (48 H) and 14 days (14 D) of immobilization
+- results: *"Micro-array analyses of total RNA extracted from biopsy samples at 48 H and 14 D uncovered 575 and 3,128 probes, respectively, which were significantly altered during immobilization."*
+- BioProject: PRJNA112003
+- 
+
+
+
+## Results  
+7/29/2021  
+res_GSE14901F.csv 
+p < 0.05: 3183 
+p < 0.01: 1301 
+adj.P < 0.1: 295 
+adj.P < 0.05: 295 
+adj.P < 0.01: 4 
+
+res_GSE14901M.csv 
+p < 0.05: 2795 
+p < 0.01: 1128 
+adj.P < 0.1: 237 
+adj.P < 0.05: 237 
+adj.P < 0.01: 2  
+
+
