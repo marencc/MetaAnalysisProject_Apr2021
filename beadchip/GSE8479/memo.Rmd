@@ -46,6 +46,21 @@ The original study `limma` for normalization whereas our analysis used `normaliz
 
 
 ## Results
+7/28/2021  
+res_GSE8479F.csv 
+p < 0.05: 5747 
+p < 0.01: 3000 
+adj.P < 0.05: 2373 
+adj.P < 0.01: 609 
+
+res_GSE8479M.csv 
+p < 0.05: 5005 
+p < 0.01: 2367 
+adj.P < 0.05: 1420 
+adj.P < 0.01: 184
+
+
+
 7/12/2021  
 **log-transformed**
 F 

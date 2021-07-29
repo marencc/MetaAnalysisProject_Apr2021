@@ -24,7 +24,7 @@ if (!file.exists("data")) {
     dir.create("data")
     }
 
-geo <- getGEO("GSE8479", destdir = "data")
+geo <- getGEO("GSE8479")
 length(geo)  # 1
 gse <- geo[[1]]
 

@@ -1,0 +1,336 @@
+---
+title: 'Meta Analysis: Exploring Results'
+subtitle: 'Beadchip'
+output: 
+    html_document:
+        code_folding: "hide"
+---
+Date 7/28/2021
+```{r working directory, warning=F, message=F}
+setwd("/Users/Emma/Documents/Bioinformatics/DEG/MetaAnalysisProject_Apr2021")
+library(EnhancedVolcano)
+```
+
+## GSE8479
+
+- Resistance Exercise Reverses Aging in Human Skeletal Muscle
+- geo: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE8479
+- journal: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0000465
+- n = 14 (m6 f8)
+- older
+
+```{r GSE8479}
+GSE8479F <- read.csv("beadchip/GSE8479/res_GSE8479F.csv", header = T)
+GSE8479M <- read.csv("beadchip/GSE8479/res_GSE8479M.csv", header = T)
+```
+
+
+```{r GSE8479F volcano}
+EnhancedVolcano(GSE8479F,
+                lab = GSE8479F$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'adj.P.Val',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 5),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                pCutoff = 0.05,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "GSE8479F", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+```
+
+
+```{r GSE8479M volcano}
+EnhancedVolcano(GSE8479M,
+                lab = GSE8479M$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'adj.P.Val',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 3),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                pCutoff = 0.05,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "GSE8479M", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+
+```
+
+<br>
+
+## GSE58249
+
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE58249
+- pubmed: https://pubmed.ncbi.nlm.nih.gov/25138607/
+- ncbi full txt: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4200377/
+- resistance (n = 9) / aerobic (n = 8)
+- 13 female, 5 male
+
+```{r GSE58249}
+GSE58249FAres <- read.csv("beadchip/GSE58249/res_GSE58249reFA.csv", header = T)
+GSE58249FRres <- read.csv("beadchip/GSE58249/res_GSE58249reFR.csv", header = T)
+GSE58249MAres <- read.csv("beadchip/GSE58249/res_GSE58249reMA.csv", header = T)
+GSE58249MRres <- read.csv("beadchip/GSE58249/res_GSE58249reMR.csv", header = T)
+```
+
+
+```{r GSE58249FAres volcano}
+EnhancedVolcano(GSE58249FAres,
+                lab = GSE58249FAres$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'adj.P.Val',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 3),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                pCutoff = 0.05,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+```
+
+
+```{r GSE58249FRres volcano}
+EnhancedVolcano(GSE58249FRres,
+                lab = GSE58249FRres$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'adj.P.Val',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 3),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                pCutoff = 0.05,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+```
+
+
+```{r GSE58249MAres volcano}
+EnhancedVolcano(GSE58249MAres,
+                lab = GSE58249MAres$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'adj.P.Val',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 3),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                pCutoff = 0.05,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+
+```
+
+
+```{r GSE58249MRres volcano}
+EnhancedVolcano(GSE58249MRres,
+                lab = GSE58249MRres$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'P.Value',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 4),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~italic(P)),
+                pCutoff = 0.01,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+
+```
+
+<br>
+
+## GSE139258
+
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE139258
+- journal: https://physoc.onlinelibrary.wiley.com/doi/full/10.14814/phy2.14416
+- **method:** performed multiple measurements of mitochondrial capacity both in vivo and ex vivo in lean or overweight individuals. 18-day aerobic exercise training.
+- **participants:**  Lean Active (**LA**, n = 7 males) and Lean/Overweight Sedentary (**LOS**, n = 9; n = 3 males). LOS individuals were not engaged in a regular exercise program. LOS individuals engaged in an exercise protocol for 18 days.
+
+```{r GSE139258}
+GSE139258F <- read.csv("beadchip/GSE139258/res_GSE139258reF.csv", header = T)
+GSE139258M <- read.csv("beadchip/GSE139258/res_GSE139258reM.csv", header = T)
+```
+
+
+```{r GSE139258F volcano}
+EnhancedVolcano(GSE139258F,
+                lab = GSE139258F$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'P.Value',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 6),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~italic(P)),
+                pCutoff = 0.01,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+
+```
+
+
+```{r GSE139258M volcano}
+EnhancedVolcano(GSE139258M,
+                lab = GSE139258M$SYMBOL,
+                # selectLab = 'Peptide9A',
+                x = 'logFC',
+                y = 'P.Value',
+                xlim = c(-2,2), ##x軸の範囲
+                ylim = c(0, 4),
+                xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
+                ylab = bquote(~-Log[10]~italic(P)),
+                pCutoff = 0.01,
+                FCcutoff = 0.5,
+                pointSize = 2.0, ##図中のドットのサイズ
+                labSize = 3.0, ##図中のラベルのサイズ
+                col = c('black', 'red', 'orange', 'blue'),
+                legendPosition = 'right',
+                legendLabels = c('Not Significant','Not Significant, But Big Fold Change',
+                           'Signficant, Minimal Fold Change','Signficant, Big Fold Change'),
+                legendLabSize = 8, ##ドットの説明文
+                legendIconSize = 5.0, ##ラベルのドットサイズ
+                labCol = 'black',
+                labFace = 'bold') +
+  
+                labs(title = "", ##一番上のタイトル
+                     titleLabSize = 25, ##タイトルのサイズ
+                     subtitle = "pre vs post", ##タイトル下のサブタイトル
+                     caption = "") ##x軸の下くらいに文字を入れられる
+
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+
+```
+
+
+

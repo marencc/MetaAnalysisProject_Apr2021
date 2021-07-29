@@ -170,6 +170,23 @@ levels(as.factor(pD$supplement))
 # [1] "placebo"
 
 
+pD %>%
+    group_by(subjectid) %>%
+    filter(n() == 1)
+# A tibble: 6 × 9
+# Groups:   subjectid [6]
+# title                   subjectid supplement gender training agegroup                  timepoint health group
+# <chr>                   <chr>     <chr>      <chr>  <chr>    <chr>                     <fct>     <fct>  <chr>
+# 1 G085_E07_211_PUJ_PRE_S… S.PUJ     placebo    M      yes      Healthy older (baseline)  pre       healt… MH   
+# 2 G085_E09_235_TUY_PRE_S… S.TUY     placebo    F      yes      Healthy older (baseline)  pre       healt… FH   
+# 3 G085_F05_150_8078_POST… S.8078    placebo    M      yes      Frail (after training)    post      frail  MF   
+# 4 G085_F08_220_ESM_POST_… S.ESM     placebo    F      yes      Healthy older (after tra… post      healt… FH   
+# 5 G085_F10_244_WIJ_POST_… S.WIJ     placebo    F      yes      Healthy older (after tra… post      healt… FH   
+# 6 G086_G12_263_KLE_PRE_S… S.KLE     placebo    M      yes      Healthy older (baseline)  pre       healt… MH 
+
+
+
+
 # checking the final pData ----
 head(pD, 3)
 #                                 title subjectid supplement gender training         agegroup timepoint health group
