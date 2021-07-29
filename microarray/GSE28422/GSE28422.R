@@ -13,7 +13,7 @@ library(devtools)
 
 #### Loading the data from GEO ####
 library(GEOquery)
-geo <- getGEO("GSE28422")
+geo <- getGEO("GSE28422", getGPL = FALSE)
 length(geo) # 1
 gse <- geo[[1]]
 gse
@@ -44,15 +44,15 @@ exprs(gse)[1:3, 1:3]
 
 #### Data cleaning ####
 # featuredata ----
-head(fData(gse), 3)
-names(fData(gse))
-fData(gse) <- fData(gse)[,c("ID",  # ex. 1007_s_at
-                            "GB_ACC",
-                            "Gene Symbol",
-                            "ENTREZ_GENE_ID"
-                            )]
-names(fData(gse)) <- c("PROBEID", "ACCNUM", "SYMBOL","ENTREZID")
-head(fData(gse), 3)
+# head(fData(gse), 3)
+# names(fData(gse))
+# fData(gse) <- fData(gse)[,c("ID",  # ex. 1007_s_at
+#                             "GB_ACC",
+#                             "Gene Symbol",
+#                             "ENTREZ_GENE_ID"
+#                             )]
+# names(fData(gse)) <- c("PROBEID", "ACCNUM", "SYMBOL","ENTREZID")
+# head(fData(gse), 3)
 #             PROBEID ACCNUM           SYMBOL          ENTREZID
 # 1007_s_at 1007_s_at U48705 DDR1 /// MIR4640 780 /// 100616237
 # 1053_at     1053_at M87338             RFC2              5982
@@ -90,9 +90,12 @@ dim(gse)
 # Features  Samples 
 # 54675       54
 
+unique(pD$biopsy)  # "T1" "T3"
 pD$timepoint <- factor(ifelse(str_detect(pD$biopsy, "T1"), "pre", "post"))
 pD$timepoint <- relevel(pD$timepoint, ref = "pre")
-levels(pD$timepoint)
+levels(pD$timepoint)  # "pre"  "post"
+
+pD$gender <- str_sub(pD$gender, 1, 1)
 
 # excluding subjects that do not have both pre & post data
 complete_subjects <- pD %>% group_by(id) %>% 
@@ -106,14 +109,17 @@ dim(gse)
 # Features  Samples 
 # 54675       52
 
-pD$group <- paste0(str_sub(pD$gender, 1, 1), str_sub(pD$age, 1, 1))
+# pD$group <- paste0(str_sub(pD$gender, 1, 1), str_sub(pD$age, 1, 1))
 head(pD, 3)
-#                               title   age gender timepoint  training description id biopsy group
-# GSM702357 T1_Pre_Male_Young (81373) Young   Male       pre Untrained        T1_4 S4     T1    MY
-# GSM702358 T1_Pre_Male_Young (81379) Young   Male       pre Untrained        T1_6 S6     T1    MY
-# GSM702359 T1_Pre_Male_Young (81390) Young   Male       pre Untrained        T1_9 S9     T1    MY
+#                               title   age gender timepoint  training description  id biopsy
+# GSM702357 T1_Pre_Male_Young (81373) Young   Male       pre Untrained        T1_4  S4     T1
+# GSM702358 T1_Pre_Male_Young (81379) Young   Male       pre Untrained        T1_6  S6     T1
+# GSM702359 T1_Pre_Male_Young (81390) Young   Male       pre Untrained        T1_9  S9     T1
 
-
+table(pD$gender, pD$timepoint)
+#        pre post
+# Female  12   12
+# Male    14   14
 
 #### Normalization (skipped) ####
 head(pData(gse)$data_processing, 1)
@@ -122,11 +128,16 @@ head(pData(gse)$data_processing, 1)
 # The trimmed mean target intensity of each array was arbitrarily set to 1500."
 
 #### checking data intensities
+if (!file.exists("plot")){
+    dir.create("plot")
+}
+png(filename = "plot/boxplot_ck_normalization.png")
 oligo::boxplot(log2(exprs(gse)), target = "core",
-               main = "Boxplot of log2-intensitites for the raw data",
+               main = "Boxplot of log2-intensitites for the downloaded data",
                outline = FALSE,
                las = 2,
                cex.axis=0.7)
+dev.off()
 # memo: based on the boxplot, the data seems to be already normalized.
 
 
@@ -153,26 +164,18 @@ sd_ratio <- sqrt(percentVar[2] / percentVar[1])
 head(pD, 3)
 dataGG <- data.frame(PC1 = PCA_raw$x[,1], PC2 = PCA_raw$x[,2],
                      individual = pD$id,
-                     timepoint = pD$biopsy,
-                     group = pD$group,
+                     timepoint = pD$timepoint,
                      gender = pD$gender
                      )
 
+png("plot/pca_timepoint_by_gender.png")
 ggplot(dataGG, aes(PC1, PC2)) +
     geom_point(aes(colour = timepoint)) +
     facet_grid(. ~ gender) +
     ggtitle("PCA: timepoint & gender") +
     xlab(paste0("PC1, VarExp: ", percentVar[1], "%")) +
     ylab(paste0("PC2, VarExp: ", percentVar[2], "%"))
-
-ggplot(dataGG, aes(PC1, PC2)) +
-    geom_point(aes(colour = timepoint)) +
-    facet_grid(group ~ .) +
-    ggtitle("PCA: timepoint & gender & age") +
-    xlab(paste0("PC1, VarExp: ", percentVar[1], "%")) +
-    ylab(paste0("PC2, VarExp: ", percentVar[2], "%"))
-
-
+dev.off()
 
 
 #### Filtering based on intensity ####
@@ -190,10 +193,10 @@ man_threshold <- 5
 abline(v = man_threshold, col = "coral4", lwd = 2)
 
 #. Excluding genes that below the threshold ----
-no_of_samples <- table(pD$group)
+no_of_samples <- table(paste(pD$gender, pD$timepoint, sep = "_"))
 no_of_samples
-# FO FY MO MY 
-# 12 12 12 16
+# Female_post  Female_pre   Male_post    Male_pre 
+# 12          12          14          14
 
 samples_cutoff <- min(no_of_samples)
 idx_man_threshold <- apply(log2(exprs(gse)), 1,
@@ -283,15 +286,15 @@ dim(final)
 head(pD, 3)
 individual <- pD$id
 timepoint <- pD$timepoint
-group <- pD$group
+gender <- pD$gender
 
 #### lmFit() ####
 exprs(final) <- log2(exprs(final))
-for (i in unique(group)) {
+for (i in unique(gender)) {
     print(i)
-    subjects <- individual[group == i]
-    pre_post <- timepoint[group == i]
-    data <- final[, group == i]
+    subjects <- individual[gender == i]
+    pre_post <- timepoint[gender == i]
+    data <- final[, gender == i]
     
     design <- model.matrix(~ 0 + pre_post + subjects)
     colnames(design)[1:2] <- c("pre", "post")
@@ -302,7 +305,7 @@ for (i in unique(group)) {
     
     #### Results ####
     table <- topTable(contr.fit, coef = 1, number = Inf)
-    write.csv(table, file = paste0("res_GSE28422re", i, ".csv"))
+    write.csv(table, file = paste0("res_GSE28422", i, ".csv"))
     print(head(table))
 }
 
@@ -311,13 +314,13 @@ for (i in unique(group)) {
 library(RColorBrewer)
 result_files <- list.files(pattern = ".csv")
 result_files
-# [1] "res_GSE28422FO.csv" "res_GSE28422FY.csv" "res_GSE28422MO.csv" "res_GSE28422MY.csv"
+# [1] "res_GSE28422F.csv" "res_GSE28422M.csv"
 par(mfrow = c(2,2))
 
 for (i in 1:length(result_files)) {
     file <- result_files[i]
     results <- read.csv(file)
-    group <- str_sub(file, -6, -5) 
+    gender <- str_sub(file, -5, -5) 
     
     ## histgram ##
     hist(results$P.Value, col = brewer.pal(3, name = "Set2")[1], 
@@ -329,10 +332,189 @@ for (i in 1:length(result_files)) {
     cat(file, "\n")
     cat("p < 0.05:", nrow(subset(results, P.Value < 0.05)), "\n")
     cat("p < 0.01:", nrow(subset(results, P.Value < 0.01)), "\n")
+    cat("p < 0.001:", nrow(subset(results, P.Value < 0.001)), "\n")
+    cat("adj.P < 0.1:", nrow(subset(results, adj.P.Val < 0.1)),"\n")
     cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.05)),"\n")
-    cat("adj.P < 0.05:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
+    cat("adj.P < 0.01:", nrow(subset(results, adj.P.Val < 0.01)),"\n\n")
 }
 
 # to explore more (ex)
 # tail(subset(results, adj.P.Val < 0.05))
+
+
+#. volcano plot ----
+library(EnhancedVolcano)
+library(patchwork)
+
+for (i in 1:length(result_files)) {
+    file <- result_files[i]
+    results <- read.csv(file)
+    name <- str_sub(file, 5, 13)
+    group <- tolower(str_sub(file, -5, -5))
+    
+    p1 <-
+        EnhancedVolcano(results,
+                        lab = results$SYMBOL,
+                        # selectLab = 'Peptide9A',
+                        x = 'logFC',
+                        y = 'adj.P.Val',
+                        xlim = c(floor(min(results$logFC)), ceiling(max(abs(results$logFC)))),
+                        ylim = c(0, ceiling(max(-log10(results$adj.P.Val)))),
+                        xlab = bquote(~Log[2]~ 'fold change'),
+                        ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                        pCutoff = 0.01,
+                        FCcutoff = 0.5,
+                        pointSize = 2.0, 
+                        labSize = 3.0,
+                        col = c('black', 'red', 'orange', 'blue'),
+                        legendPosition = '',
+                        legendLabels = c('NS','Log2 FC',
+                                         'adj.p.val','adj.p.val & Log2 FC')) +
+        
+        labs(title = paste(name, "adj.p < 0.01"),
+             titleLabSize = 10,
+             subtitle = "pre vs post",
+             caption = "")
+    
+    
+    p2 <- 
+        EnhancedVolcano(results,
+                        lab = results$SYMBOL,
+                        # selectLab = 'Peptide9A',
+                        x = 'logFC',
+                        y = 'adj.P.Val',
+                        xlim = c(floor(min(results$logFC)), ceiling(max(abs(results$logFC)))),
+                        ylim = c(0, ceiling(max(-log10(results$adj.P.Val)))),
+                        xlab = bquote(~Log[2]~ 'fold change'),
+                        ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                        pCutoff = 0.05,
+                        FCcutoff = 0.5,
+                        pointSize = 2.0, 
+                        labSize = 3.0,
+                        col = c('black', 'red', 'orange', 'blue'),
+                        legendPosition = '',
+                        legendLabels = c('NS','Log2 FC',
+                                         'adj.p.val','adj.p.val & Log2 FC')) +
+        
+        labs(title = paste(name, "adj.p < 0.05"),
+             titleLabSize = 10,
+             subtitle = "pre vs post",
+             caption = "")
+    
+    
+    p3 <- 
+        EnhancedVolcano(results,
+                        lab = results$SYMBOL,
+                        # selectLab = 'Peptide9A',
+                        x = 'logFC',
+                        y = 'adj.P.Val',
+                        xlim = c(floor(min(results$logFC)), ceiling(max(abs(results$logFC)))),
+                        ylim = c(0, ceiling(max(-log10(results$adj.P.Val)))),
+                        xlab = bquote(~Log[2]~ 'fold change'),
+                        ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                        pCutoff = 0.1,
+                        FCcutoff = 0.5,
+                        pointSize = 2.0, 
+                        labSize = 3.0,
+                        col = c('black', 'red', 'orange', 'blue'),
+                        legendPosition = '',
+                        legendLabels = c('NS','Log2 FC',
+                                         'adj.p.val','adj.p.val & Log2 FC')) +
+        
+        labs(title = paste(name, "adj.p < 0.1"),
+             titleLabSize = 10,
+             subtitle = "pre vs post",
+             caption = "")
+    
+    
+    p4 <- 
+        EnhancedVolcano(results,
+                        lab = results$SYMBOL,
+                        # selectLab = 'Peptide9A',
+                        x = 'logFC',
+                        y = 'P.Value',
+                        xlim = c(floor(min(results$logFC)), ceiling(max(abs(results$logFC)))),
+                        ylim = c(0, ceiling(max(-log10(results$P.Value)))),
+                        xlab = bquote(~Log[2]~ 'fold change'),
+                        ylab = bquote(~-Log[10]~italic(P)),
+                        pCutoff = 0.001,
+                        FCcutoff = 0.5,
+                        pointSize = 2.0, 
+                        labSize = 3.0,
+                        col = c('black', 'red', 'orange', 'blue'),
+                        legendPosition = '',
+                        legendLabels = c('NS','Log2 FC', 'p.val','p.val & Log2 FC')) +
+        labs(title = paste(name, "p < 0.001"),
+             titleLabSize = 10,
+             subtitle = "pre vs post",
+             caption = "")
+    
+    
+    p5 <- 
+        EnhancedVolcano(results,
+                        lab = results$SYMBOL,
+                        # selectLab = 'Peptide9A',
+                        x = 'logFC',
+                        y = 'P.Value',
+                        xlim = c(floor(min(results$logFC)), ceiling(max(abs(results$logFC)))),
+                        ylim = c(0, ceiling(max(-log10(results$P.Value)))),
+                        xlab = bquote(~Log[2]~ 'fold change'),
+                        ylab = bquote(~-Log[10]~italic(P)),
+                        pCutoff = 0.01,
+                        FCcutoff = 0.5,
+                        pointSize = 2.0, 
+                        labSize = 3.0,
+                        col = c('black', 'red', 'orange', 'blue'),
+                        legendPosition = '',
+                        legendLabels = c('NS','Log2 FC', 'p.val','p.val & Log2 FC')) +
+        labs(title = paste(name, "p < 0.01"),
+             titleLabSize = 10,
+             subtitle = "pre vs post",
+             caption = "")
+    
+    
+    p6 <- 
+        EnhancedVolcano(results,
+                        lab = results$SYMBOL,
+                        # selectLab = 'Peptide9A',
+                        x = 'logFC',
+                        y = 'P.Value',
+                        xlim = c(floor(min(results$logFC)), ceiling(max(abs(results$logFC)))),
+                        ylim = c(0, ceiling(max(-log10(results$P.Value)))),
+                        xlab = bquote(~Log[2]~ 'fold change'),
+                        ylab = bquote(~-Log[10]~italic(P)),
+                        pCutoff = 0.05,
+                        FCcutoff = 0.5,
+                        pointSize = 2.0, 
+                        labSize = 3.0,
+                        col = c('black', 'red', 'orange', 'blue'),
+                        legendPosition = '',
+                        legendLabels = c('NS','Log2 FC', 'p.val','p.val & Log2 FC')) +
+        labs(title = paste(name, "p < 0.05"),
+             titleLabSize = 10,
+             subtitle = "pre vs post",
+             caption = "")
+    
+    png(filename = paste0("plot/volcano_adjp_", group, ".png"),
+        width = 1280, height = 600)
+    print(p1 + p2 + p3  + plot_layout(guides = "collect") & 
+              theme(legend.position = "bottom", 
+                    legend.text = element_text(size = 10)))
+    dev.off()
+    
+    png(filename = paste0("plot/volcano_p_", group, ".png"),
+        width = 1280, height = 600)
+    print(p4 + p5 + p6  + plot_layout(guides = "collect") & 
+              theme(legend.position = "bottom", 
+                    legend.text = element_text(size = 10)))
+    dev.off()
+}
+### 特定のgeneを取り出したplot図
+# topGene <- rownames(res)[663] #86: 128B, 525: SHMOOSE, 148: Humanin, 663: MOTSc, SHLP6, 644: SHLP2
+# plotCounts(dds, topGene, intgroup = c("sarcopenia_status"), xlab = "Group", ylabel = "Normalized Counts") 
+
+
+
+
+
 

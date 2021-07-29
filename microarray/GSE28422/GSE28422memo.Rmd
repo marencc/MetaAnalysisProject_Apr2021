@@ -1,0 +1,119 @@
+---
+title: "GSE28422"
+date: "7/10/2021"
+output: html_document
+---
+
+## GSE28422: Resistance
+
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE28422
+- pmc: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3365403/
+
+## Summary
+
+- 28 young/old adults
+    - yng: n=16, 24±1y 8m & 8f
+    - old: n=12, 84±1y 6m & 6f
+    - male: n=14, female: n=14
+- 12 wks of progressive resistance training (3D/wk = 36 sessions)
+- biopsies (4): pre, post of 1st & 36th training
+- E-GEOD-28422
+- GPL570[HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
+
+## Analysis
+
+- comparison: 1st pre vs 2nd pre (i.g. T1 vs T3)
+
+
+## Skipped 
+
+
+
+
+## Problems
+
+
+
+
+
+## Results
+7/29/2021  
+res_GSE28422F.csv 
+p < 0.05: 4906 
+p < 0.01: 1795 
+p < 0.001: 459 
+adj.P < 0.1: 575 
+adj.P < 0.05: 203 
+adj.P < 0.01: 50 
+
+res_GSE28422M.csv 
+p < 0.05: 2860 
+p < 0.01: 766 
+p < 0.001: 109 
+adj.P < 0.1: 1 
+adj.P < 0.05: 1 
+adj.P < 0.01: 1
+
+
+7/12/2021  
+(log-transformed data)  
+res_GSE28422reFO.csv 
+p < 0.05: 4185 
+p < 0.01: 1167 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422reFY.csv 
+p < 0.05: 3151 
+p < 0.01: 783 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422reMO.csv 
+p < 0.05: 3237 
+p < 0.01: 661 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422reMY.csv 
+p < 0.05: 1502 
+p < 0.01: 285 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0
+
+<br>
+
+7/10/2021  
+(non log-transfomrmed data)  
+res_GSE28422FO.csv 
+p < 0.05: 5072 
+p < 0.01: 1719 
+adj.P < 0.05: 30 
+adj.P < 0.05: 1 
+
+res_GSE28422FY.csv 
+p < 0.05: 3512 
+p < 0.01: 940 
+adj.P < 0.05: 1 
+adj.P < 0.05: 0 
+
+res_GSE28422MO.csv 
+p < 0.05: 3813 
+p < 0.01: 927 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+res_GSE28422MY.csv 
+p < 0.05: 1363 
+p < 0.01: 209 
+adj.P < 0.05: 0 
+adj.P < 0.05: 0 
+
+
+
+
+
+
+
+
+
