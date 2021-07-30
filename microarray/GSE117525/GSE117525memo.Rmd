@@ -5,12 +5,14 @@ output: html_document
 ---
 
 ## GSE117525
+
 - Expression of protocadherin gamma in skeletal muscle tissue is associated with
 - age and muscle weakness
 - **journal:** https://onlinelibrary.wiley.com/doi/full/10.1002/jcsm.12099
 - **GEO:** https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE117525
 - **pubmed(abst):** https://pubmed.ncbi.nlm.nih.gov/27239416/
-
+- **analysed subjects:** healthy(m14, f4) frail(m6, f8) or gender(m20, f12), 32 in total
+  
 **treatment_protocol_ch1**  
 
 - GSM3302211 Training for both frail and healthy older subjects and consisted of  
@@ -35,6 +37,25 @@ library(hugene11sttranscriptcluster.db)
 
 
 ## Results  
+7/29/2021  
+res_GSE117525F.csv 
+p < 0.05: 1606 
+p < 0.01: 507 
+p < 0.001: 85 
+adj.P < 0.1: 28 
+adj.P < 0.05: 6 
+adj.P < 0.01: 0 
+
+res_GSE117525M.csv 
+p < 0.05: 2034 
+p < 0.01: 829 
+p < 0.001: 230 
+adj.P < 0.1: 420 
+adj.P < 0.05: 193 
+adj.P < 0.01: 30
+
+
+
 7/12/2021  
 res_GSE117525reF.csv 
 p < 0.05: 1604 
