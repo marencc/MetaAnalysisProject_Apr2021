@@ -791,8 +791,8 @@ EnhancedVolcano(GSE48278MF,
 - MF13, FF16, MH30, FH11: analysied  ---> **unpaied samples were included** (pre: placebo, post: protein)  
 
 ```{r GSE117525}
-GSE117525F <- read.csv("microarray/GSE117525/res_GSE117525reF.csv", header = T)
-GSE117525M <- read.csv("microarray/GSE117525/res_GSE117525reM.csv", header = T)
+GSE117525F <- read.csv("microarray/GSE117525/res_GSE117525F.csv", header = T)
+GSE117525M <- read.csv("microarray/GSE117525/res_GSE117525M.csv", header = T)
 ```
 
 
@@ -801,12 +801,12 @@ EnhancedVolcano(GSE117525F,
                 lab = GSE117525F$SYMBOL,
                 # selectLab = 'Peptide9A',
                 x = 'logFC',
-                y = 'P.Value',
+                y = 'adj.P.Val',
                 xlim = c(-1.5,1.5), ##x軸の範囲
                 ylim = c(0, 6),
                 xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
-                ylab = bquote(~-Log[10]~italic(P)),
-                pCutoff = 0.01,
+                ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                pCutoff = 0.05,
                 FCcutoff = 0.5,
                 pointSize = 2.0, ##図中のドットのサイズ
                 labSize = 3.0, ##図中のラベルのサイズ
@@ -838,8 +838,8 @@ EnhancedVolcano(GSE117525M,
                 xlim = c(-1.5,1.5), ##x軸の範囲
                 ylim = c(0, 3),
                 xlab = bquote(~Log[2]~ 'fold change'), ##x軸タイトル
-                ylab = bquote(~-Log[10]~italic(P)),
-                pCutoff = 0.01,
+                ylab = bquote(~-Log[10]~adjusted~italic(P)),
+                pCutoff = 0.05,
                 FCcutoff = 0.5,
                 pointSize = 2.0, ##図中のドットのサイズ
                 labSize = 3.0, ##図中のラベルのサイズ
