@@ -1,0 +1,25 @@
+---
+title: "GSE130722memo"
+author: "Emma"
+date: "7/30/2021"
+output: html_document
+---
+
+## Skeletal Muscle Energetics and Mitochondrial Function Are Impaired Following 10 Days of Bed Rest in Older Adults  
+
+- title(GEO): Effects of a nutritional supplement in older individuals subject to ten days of complete bed rest.
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE130722
+- journal (Gerontology, Series A): https://academic.oup.com/biomedgerontology/article/75/9/1744/5697344?searchresult=1#supplementary-data
+- pubmed: https://pubmed.ncbi.nlm.nih.gov/31907525/
+- full text: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7494044/
+- BioProject PRJNA541175
+- SRA SRP195398
+- SRA: https://www.ncbi.nlm.nih.gov/Traces/study/?acc=PRJNA541175&o=acc_s%3Aa
+- 10D bed rest, older adults
+- analysed subjects: m6 ,f3 (supplement takers were excluded)
+
+
+## Problems
+
+- no individual-identifiable information (gender, supplement)
+

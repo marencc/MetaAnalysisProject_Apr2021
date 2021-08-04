@@ -1,0 +1,391 @@
+# sickle outputs
+08/03/2021 
+sickle: SRR7007949
+
+FastQ records kept: 25488666
+FastQ records discarded: 191498
+
+
+
+sickle: SRR7007950
+
+FastQ records kept: 28840247
+FastQ records discarded: 230740
+
+
+
+sickle: SRR7007951
+
+FastQ records kept: 27117769
+FastQ records discarded: 207645
+
+
+
+sickle: SRR7007952
+
+FastQ records kept: 33937705
+FastQ records discarded: 261946
+
+
+
+sickle: SRR7007953
+
+FastQ records kept: 34490471
+FastQ records discarded: 273817
+
+
+
+sickle: SRR7007954
+
+FastQ records kept: 32490044
+FastQ records discarded: 245941
+
+
+
+sickle: SRR7007955
+
+FastQ records kept: 33233747
+FastQ records discarded: 306340
+
+
+
+sickle: SRR7007956
+
+FastQ records kept: 28277991
+FastQ records discarded: 216551
+
+
+
+sickle: SRR7007957
+
+FastQ records kept: 32015452
+FastQ records discarded: 213036
+
+
+
+sickle: SRR7007958
+
+FastQ records kept: 27551241
+FastQ records discarded: 178100
+
+
+
+sickle: SRR7007959
+
+FastQ records kept: 29383014
+FastQ records discarded: 197713
+
+
+
+sickle: SRR7007960
+
+FastQ records kept: 28782813
+FastQ records discarded: 193110
+
+
+
+sickle: SRR7007961
+
+FastQ records kept: 30175002
+FastQ records discarded: 210732
+
+
+
+sickle: SRR7007962
+
+FastQ records kept: 27599465
+FastQ records discarded: 180286
+
+
+
+sickle: SRR7007963
+
+FastQ records kept: 27994077
+FastQ records discarded: 200797
+
+
+
+sickle: SRR7007964
+
+FastQ records kept: 30748413
+FastQ records discarded: 265646
+
+
+
+sickle: SRR7007965
+
+FastQ records kept: 69506513
+FastQ records discarded: 445904
+
+
+
+sickle: SRR7007966
+
+FastQ records kept: 57502404
+FastQ records discarded: 385530
+
+
+
+sickle: SRR7007967
+
+FastQ records kept: 50009331
+FastQ records discarded: 292975
+
+
+
+sickle: SRR7007968
+
+FastQ records kept: 52129238
+FastQ records discarded: 306148
+
+
+
+sickle: SRR7007969
+
+FastQ records kept: 27343011
+FastQ records discarded: 147036
+
+
+
+sickle: SRR7007970
+
+FastQ records kept: 22868163
+FastQ records discarded: 88740
+
+
+
+sickle: SRR7007971
+
+FastQ records kept: 22090034
+FastQ records discarded: 95696
+
+
+
+sickle: SRR7007972
+
+FastQ records kept: 20908005
+FastQ records discarded: 98840
+
+
+
+sickle: SRR7007973
+
+FastQ records kept: 29883515
+FastQ records discarded: 140706
+
+
+
+sickle: SRR7007974
+
+FastQ records kept: 24076456
+FastQ records discarded: 105018
+
+
+
+sickle: SRR7007975
+
+FastQ records kept: 21176523
+FastQ records discarded: 115200
+
+
+
+sickle: SRR7007976
+
+FastQ records kept: 21942578
+FastQ records discarded: 112072
+
+
+
+sickle: SRR7007977
+
+FastQ records kept: 27904211
+FastQ records discarded: 165919
+
+
+
+sickle: SRR7007978
+
+FastQ records kept: 23532914
+FastQ records discarded: 109441
+
+
+
+sickle: SRR7007979
+
+FastQ records kept: 22651558
+FastQ records discarded: 131626
+
+
+
+sickle: SRR7007980
+
+FastQ records kept: 27505944
+FastQ records discarded: 359591
+
+
+
+sickle: SRR7007981
+
+FastQ records kept: 23085396
+FastQ records discarded: 137207
+
+
+
+sickle: SRR7007982
+
+FastQ records kept: 27885995
+FastQ records discarded: 153476
+
+
+
+sickle: SRR7007983
+
+FastQ records kept: 29272311
+FastQ records discarded: 159937
+
+
+
+sickle: SRR7007984
+
+FastQ records kept: 28061141
+FastQ records discarded: 168807
+
+
+
+sickle: SRR7007985
+
+FastQ records kept: 47409447
+FastQ records discarded: 175058
+
+
+
+sickle: SRR7007986
+
+FastQ records kept: 44559625
+FastQ records discarded: 155481
+
+
+
+sickle: SRR7007987
+
+FastQ records kept: 16267059
+FastQ records discarded: 67191
+
+
+
+sickle: SRR7007988
+
+FastQ records kept: 29838336
+FastQ records discarded: 112110
+
+
+
+sickle: SRR7007989
+
+FastQ records kept: 28512061
+FastQ records discarded: 110745
+
+
+
+sickle: SRR7007990
+
+FastQ records kept: 28796485
+FastQ records discarded: 113894
+
+
+
+sickle: SRR7007991
+
+FastQ records kept: 25321900
+FastQ records discarded: 137575
+
+
+
+sickle: SRR7007992
+
+FastQ records kept: 24900142
+FastQ records discarded: 112619
+
+
+
+sickle: SRR7007993
+
+FastQ records kept: 23772530
+FastQ records discarded: 110497
+
+
+
+sickle: SRR7007994
+
+FastQ records kept: 28050083
+FastQ records discarded: 126260
+
+
+
+sickle: SRR7007995
+
+FastQ records kept: 29885143
+FastQ records discarded: 137235
+
+
+
+sickle: SRR7007996
+
+FastQ records kept: 26883437
+FastQ records discarded: 124370
+
+
+
+sickle: SRR7007997
+
+FastQ records kept: 22718548
+FastQ records discarded: 108924
+
+
+
+sickle: SRR7007998
+
+FastQ records kept: 23761907
+FastQ records discarded: 109810
+
+
+
+sickle: SRR7007999
+
+FastQ records kept: 23479822
+FastQ records discarded: 128888
+
+
+
+sickle: SRR7008000
+
+FastQ records kept: 29310247
+FastQ records discarded: 166141
+
+
+
+sickle: SRR7008001
+
+FastQ records kept: 29220677
+FastQ records discarded: 151071
+
+
+
+sickle: SRR7008002
+
+FastQ records kept: 23210711
+FastQ records discarded: 123930
+
+
+
+sickle: SRR7008003
+
+FastQ records kept: 41497263
+FastQ records discarded: 160915
+
+
+
+sickle: SRR7008004
+
+FastQ records kept: 45931802
+FastQ records discarded: 162049

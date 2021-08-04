@@ -1,0 +1,21 @@
+---
+title: "GSE113165"
+author: "Emma"
+date: "7/29/2021"
+output: html_document
+---
+
+## Disuse-induced insulin resistance susceptibility coincides with a dysregulated skeletal muscle metabolic transcriptome
+
+- GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE113165
+- BioProject PRJNA450495
+- SRA: SRP140795
+- RunSelector: https://www.ncbi.nlm.nih.gov/Traces/study/?acc=PRJNA450495&o=acc_s%3Aa
+- pubmed: https://pubmed.ncbi.nlm.nih.gov/30763167/
+- full text: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6589819/
+-
+
+
+
+
+
