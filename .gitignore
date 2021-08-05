@@ -1,8 +1,6 @@
 .DS_Store
 .Rhistory
 .Rproj.user/
-~$Muscle_gene_summary_includeMF.xlsx
-~$annotationpkg.xlsx
 data/
 Muscle_gene_summary_includeMF.xlsx
 annotationpkg.xlsx
@@ -11,4 +9,5 @@ QCreportM/
 QCreportF/
 *.html
 *.RData
-
+fastq
+fastqc
