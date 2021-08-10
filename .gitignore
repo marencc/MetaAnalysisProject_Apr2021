@@ -16,7 +16,7 @@ fastp
 fastqc
 star
 star_rRnarm
-command/
+command
 *.fastq.gz
 *.bam
 *.fastq
