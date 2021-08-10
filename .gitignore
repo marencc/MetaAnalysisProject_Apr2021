@@ -10,6 +10,8 @@ QCreportF/
 *.html
 *.RData
 fastq
+fastq_Riboseq
+fastq_Rnaseq
 fastp
 fastqc
 star
