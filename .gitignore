@@ -23,5 +23,3 @@ command
 *.fastq
 *bam*
 hisat2_test
-
-inactive/GSE162730/test.R
