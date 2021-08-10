@@ -10,6 +10,7 @@ QCreportF/
 *.html
 *.RData
 fastq
+<<<<<<< HEAD
 fastq_Riboseq
 fastq_Rnaseq
 fastp
@@ -21,3 +22,6 @@ command/
 *.bam
 *.fastq
 *bam*
+=======
+fastqc
+>>>>>>> parent of 1274b90... modified .gitignore
