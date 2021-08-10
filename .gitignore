@@ -24,7 +24,5 @@ command
 *bam*
 hisat2_test
 
-inactive/GSE113165/counts.fastp.txt.summary
-inactive/GSE162730/countsRNA_prerRnaRemoval.txt.summary
 inactive/GSE162730/countsRNA_prerRnaRemoval.txt
 inactive/GSE162730/test.R
