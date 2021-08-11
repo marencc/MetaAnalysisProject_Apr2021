@@ -1,0 +1,5 @@
+### memo
+1. Fastq files for below GSEs are stored in inactivity directry
+GSE113165
+GSE162730
+
