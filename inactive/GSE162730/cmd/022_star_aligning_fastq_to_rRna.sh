@@ -29,9 +29,10 @@ count=1
 ### STAR
 cat ${FILEIDS} | while read line; do
     SECONDS=0
-    echo STAR ${count} /${FILES}: ${line} `date "+%m/%d/%Y %H:%M:%S"`
+    echo `date "+%m/%d/%Y %H:%M:%S"` STAR ${count} /${FILES}: ${line} 
 
     echo decompressing fastq.gz...
+    echo running STAR...
     STAR \
     --runThreadN 8 \
     --readFilesCommand gunzip -c \
@@ -43,6 +44,7 @@ cat ${FILEIDS} | while read line; do
     --outFilterType BySJout --outReadsUnmapped Fastx --outFilterScoreMin 10 \
     --alignEndsType EndToEnd > ${OUTDIR}/cbam/${line}.rrna.comtam.bam
     
+    echo `date "+%m/%d/%Y %H:%M:%S"` STAR finished...
     echo compressing ${line}.rRna.rm.fastq...
     mv ${OUTDIR}/${line}.rRna.rm.Unmapped.out.mate1 ${OUTDIR}/${line}.rRna.rm.fastq
     pigz -p 4 ${OUTDIR}/${line}.rRna.rm.fastq
