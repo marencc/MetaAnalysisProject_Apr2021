@@ -3,3 +3,10 @@
 2. マッピングの際にreference genomeは通常通りのensemble human genome(50bp)を使用したが、miRBase（https://www.mirbase.org/）など、miRna等のデータにマッピングするべき？
 3. 解析手法参考？Bioinformatic Analysis of Small RNA Sequencing Libraries: https://link.springer.com/protocol/10.1007%2F978-1-4939-9042-9_4
 4. こちらも参考になる？Large-scale profiling of microRNAs for The Cancer Genome Atlas: https://academic.oup.com/nar/article/44/1/e3/2499678
+
+8/11/2021
+### gender information unavailable?
+
+
+
+
