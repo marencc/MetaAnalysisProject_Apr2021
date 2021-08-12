@@ -328,6 +328,7 @@ samples
 dim(samples)  # 32  5
 
 # writing out sample tables ----
+samples <- samples %>% arrange(run)
 write.table(samples, "sampletable_all.txt", sep = "\t")
 
 samples_rna <- filter(samples, library == "RNA-Seq")
@@ -351,8 +352,21 @@ write.table(counts, "countmat_rna.txt", sep = "\t", col.names = TRUE)
 # checking the data ----
 s <- read.table("sampletable_rna.txt", sep = "\t", header = TRUE)
 head(s)
+#           run subject library time gender
+# 1 SRR13202581     S21 RNA-Seq  pre female
+# 2 SRR13202584     S21 RNA-Seq post female
+# 3 SRR13202593     S23 RNA-Seq  pre   male
+# 4 SRR13202596     S23 RNA-Seq post   male
+# 5 SRR13202605     S25 RNA-Seq  pre female
+# 6 SRR13202608     S25 RNA-Seq post female
 dim(s)  # 16  5
 
 c <- read.table("countmat_rna.txt", sep = "\t", header = TRUE)
-head(c)
+c[1:5,1:6]
+#                 SRR13202581 SRR13202584 SRR13202593 SRR13202596 SRR13202605 SRR13202608
+# ENSG00000284662        0.86        0.31        0.25        0.34        0.45        1.20
+# ENSG00000186827       20.63       10.25        5.17        5.27       14.17        8.14
+# ENSG00000186891        5.33        4.00        0.00        2.03        1.00        1.00
+# ENSG00000160072      425.39      197.80      129.01      165.94      225.18      258.94
+# ENSG00000041988      158.07       76.25       56.45       61.71       80.95       70.18
 dim(c)  # 60664    16
