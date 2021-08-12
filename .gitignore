@@ -22,3 +22,5 @@ star_rRnarm
 *.fastq
 *bam*
 hisat2_test
+hisat2
+sickle
