@@ -16,6 +16,7 @@ TARGETDIR=${PROJECTDIR}/${TYPE}/${TARGET}
 ALLFILEIDS=${TARGETDIR}/SRR_Acc_List.txt
 RESTFILEIDS=${TARGETDIR}/SRR_Acc_List_rest.txt
 FILES=`cat ${ALLFILEIDS} | wc -l`
+RESTFILES=`cat ${RESTFILEIDS} | wc -l`
 
 # output directory
 mkdir -p ${TARGETDIR}/fastq
@@ -23,9 +24,9 @@ OUTDIR=${TARGETDIR}/fastq
 TEMPDIR=${OUTDIR}/temp
 
 count=1
-cat $FILEIDS | while read line; do
+cat $RESTFILEIDS | while read line; do
     SECONDS=0
-    echo `date "+%m/%d/%Y %H:%M:%S"` fasterq-dump ${count} /${FILES}: ${line} "(${TARGET})"
+    echo `date "+%m/%d/%Y %H:%M:%S"` fasterq-dump ${count} /${RESTFILES}: ${line} "(${TARGET})"
     fasterq-dump ${line} --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 8 --progress
     
     echo `date "+%m/%d/%Y %H:%M:%S"` compressing...
@@ -46,7 +47,7 @@ cat $FILEIDS | while read line; do
     es=$(($elapsed%60))
     echo elapsed: ${eh}:${em}:${es}
     
-    echo processed files: `ls ${OUTDIR}/*.fastq.gz | wc -l` /${FILES}
+    echo processed files: `ls ${OUTDIR}/*.fastq.gz | wc -l` /${ALLFILES}
     count=$((count+1))
     echo "\n"
     done
