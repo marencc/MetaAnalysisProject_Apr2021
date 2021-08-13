@@ -24,7 +24,8 @@ TEMPDIR=${OUTDIR}/temp
 count=1
 cat $FILEIDS | while read line; do
     SECONDS=0
-    echo `date "+%m/%d/%Y %H:%M:%S"` fasterq-dump ${count} /${FILES}: ${line}
+    echo `date "+%m/%d/%Y %H:%M:%S"`
+    echo fasterq-dump ${count} /${FILES}: ${line} (${TARGET})
     fasterq-dump ${line} --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 4 --progress
     
     echo `date "+%m/%d/%Y %H:%M:%S"` compressing...
