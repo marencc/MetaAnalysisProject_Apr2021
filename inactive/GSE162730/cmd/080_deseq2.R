@@ -9,51 +9,62 @@ library("magrittr")
 library("ggplot2")
 
 #### Importing Data ####
-samples <- read.table("sampletable.txt", sep = "\t", header = TRUE)
+#### 8/13/2021 Rna
+samples <- read.table("sampletable_rna.txt", sep = "\t", header = TRUE)
 head(samples, 3)
-#                   run age sample.name sex subject susceptibility time  color
-# SRR7007949 SRR7007949 old  GSM3098323   m   S3005            low  pre   blue
-# SRR7007950 SRR7007950 old  GSM3098324   m   S3005            low post orange
-# SRR7007951 SRR7007951 old  GSM3098325   m   S3008            low  pre   blue
+#           run subject library time gender
+# 1 SRR13202581     S21 RNA-Seq  pre female
+# 2 SRR13202584     S21 RNA-Seq post female
+# 3 SRR13202593     S23 RNA-Seq  pre   male
 
-counts <- read.table("countmat.fastp.txt", sep = "\t", header = TRUE)
-head(counts)
-dim(counts)  # 60664    56
+counts <- read.table("countmat_rna.txt", sep = "\t", header = TRUE)
+counts[1:5,1:5]
+#                 SRR13202581 SRR13202584 SRR13202593 SRR13202596 SRR13202605
+# ENSG00000284662        0.86        0.31        0.25        0.34        0.45
+# ENSG00000186827       20.63       10.25        5.17        5.27       14.17
+# ENSG00000186891        5.33        4.00        0.00        2.03        1.00
+# ENSG00000160072      425.39      197.80      129.01      165.94      225.18
+# ENSG00000041988      158.07       76.25       56.45       61.71       80.95
+
+dim(samples)  # 16  5
+dim(counts)  # 60664    16
 
 
 #### Constructing DESeqDataSet (DESeqDataSetFromMatrix) ####
 library("DESeq2")
-gender_id = unique(samples$sex)
+gender_id = unique(samples$gender)
 dds <- list()
 for (i in gender_id) {
     print(i)
-    coldata <- samples[samples$sex == i,]
-    countdata <- counts[,rownames(coldata)]
-    dds[[i]] <- DESeqDataSetFromMatrix(countData = countdata,
+    countdata <- counts[,samples$run[samples$gender == i]]
+    coldata <- samples[samples$gender == i,]
+    dds[[i]] <- DESeqDataSetFromMatrix(countData = round(countdata),
                                        colData = coldata, 
-                                       design = ~ subject + time)  # ref = "pre"
+                                       design = ~ subject + time)
     print(dds[[i]])
     cat("\n")
     }
-# [1] "m"
+# [1] "female"
+# converting counts to integer mode
 # class: DESeqDataSet 
-# dim: 60664 26 
+# dim: 60664 12 
 # metadata(1): version
 # assays(1): counts
 # rownames(60664): ENSG00000284662 ENSG00000186827 ... ENSG00000277475 ENSG00000275405
 # rowData names(0):
-#   colnames(26): SRR7007949 SRR7007950 ... SRR7007993 SRR7007994
-# colData names(8): run age ... time color
+#   colnames(12): 1 2 ... 13 14
+# colData names(5): run subject library time gender
 # 
-# [1] "f"
+# [1] "male"
+# converting counts to integer mode
 # class: DESeqDataSet 
-# dim: 60664 30 
+# dim: 60664 4 
 # metadata(1): version
 # assays(1): counts
 # rownames(60664): ENSG00000284662 ENSG00000186827 ... ENSG00000277475 ENSG00000275405
 # rowData names(0):
-#   colnames(30): SRR7007959 SRR7007960 ... SRR7008003 SRR7008004
-# colData names(8): run age ... time color
+#   colnames(4): 3 4 15 16
+# colData names(5): run subject library time gender
 
 
 #### Filtering low counts data ####
@@ -62,16 +73,16 @@ for (i in gender_id) {
     cat("dds", i, "\n")
     keep <- rowSums(counts(dds[[i]])) > 1
     dds[[i]] <- dds[[i]][keep,]
-    cat(dim(dds[[i]]), "\n")  # 45771    56
-    cat(dim(colData(dds[[i]])), "\n\n")  # 56  8
+    cat(dim(dds[[i]]), "\n")
+    cat(dim(colData(dds[[i]])), "\n\n")
 }
-# dds m 
-# 43164 26 
-# 26 8 
+# dds female 
+# 47705 12 
+# 12 5 
 # 
-# dds f 
-# 42250 30 
-# 30 8 
+# dds male 
+# 43558 4 
+# 4 5
 
 
 # cf. at least 3 samples with a count of 10 or higher
@@ -87,24 +98,25 @@ dir.create("plot")
 
 # 1. Normalization ---
 for (i in gender_id) {
+    gender_letter <- str_sub(i, 1, 1)
     dds[[i]] <- estimateSizeFactors(dds[[i]])
     
     # 2-1. box-plot ----
-    png(paste0("plot/boxplot_check_normalization_", i, ".png"), width = 1280, height = 800)
+    png(paste0("plot/boxplot_check_normalization_", gender_letter, ".png"), width = 1280, height = 800)
     par(mfrow = c(1, 2), mar = c(5,5,4,2))
-    boxplot(log2(counts(dds[[i]]) + 1), col = dds[[i]]$color, cex.axis = 0.7, 
+    boxplot(log2(counts(dds[[i]]) + 1), cex.axis = 0.7, ## color 
             las = 1, xlab = "log2(counts)", horizontal = TRUE, main = paste0(i, " Raw counts"))
-    boxplot(log2(counts(dds[[i]], normalized = TRUE) + 1), col = dds[[i]]$color, cex.axis = 0.7, 
+    boxplot(log2(counts(dds[[i]], normalized = TRUE) + 1), cex.axis = 0.7,  ## color 
             las = 1, xlab = "log2(normalized counts)", horizontal = TRUE, main = "Normalized counts") 
     dev.off()
     
     # 2.2 density-plot ----
     library(affy)
-    png(paste0("plot/densityplot_check_normalization_", i, ".png"), width = 1280, height = 800)
+    png(paste0("plot/densityplot_check_normalization_", gender_letter, ".png"), width = 1280, height = 800)
     par(mfrow = c(1, 2), mar = c(5,5,4,2))
-    plotDensity(log2(counts(dds[[i]]) + 1),  col = dds[[i]]$color, 
+    plotDensity(log2(counts(dds[[i]]) + 1),
                 xlab = paste0(i, " log2(counts)"), cex.lab = 0.7, panel.first = grid()) 
-    plotDensity(log2(counts(dds[[i]], normalized = TRUE) + 1), col = dds[[i]]$color, 
+    plotDensity(log2(counts(dds[[i]], normalized = TRUE) + 1),
                 xlab = "log2(normalized counts)", cex.lab = 0.7, panel.first = grid())
     dev.off()
 }
@@ -123,6 +135,23 @@ for (i in gender_id) {
 # (the variables in the design) will not contribute to the expected variance-mean trend of the experiment
 
 # these will be used soon
+# vsd  female 
+#                        1        2        5        6        7        8        9       10       11
+# ENSG00000284662 5.299515 5.166957 5.166957 5.347628 5.406577 5.354960 5.166957 5.166957 5.166957
+# ENSG00000186827 5.770222 5.757756 5.822295 5.675666 5.613970 5.786171 5.836940 5.924704 5.693526
+# ENSG00000186891 5.462950 5.542169 5.343503 5.347628 5.406577 5.492130 5.166957 5.166957 5.431335
+#                       12       13       14
+# ENSG00000284662 5.166957 5.166957 5.166957
+# ENSG00000186827 5.598819 5.832102 5.537712
+# ENSG00000186891 5.520008 5.166957 5.166957
+# 
+# vsd  male 
+#                        3        4       15       16
+# ENSG00000186827 7.932091 7.910489 7.966084 7.952073
+# ENSG00000186891 7.679663 7.825743 7.770371 7.679663
+# ENSG00000160072 8.924499 8.967867 8.980761 9.048592
+
+
 
 # cf. rlog()
 # n < 30 dataset might go well with rlog()
@@ -133,20 +162,20 @@ for (i in gender_id) {
 # 4. PCA plot ----
 pcaData = list()
 for (i in gender_id) {
+    gender_letter <- str_sub(i, 1, 1)
     cat("calculating PCA for dds", i, "\n")
     pcaData[[i]] <- plotPCA(vsd[[i]], intgroup = c("time"), returnData = TRUE)
     print(head(pcaData[[i]]))
     percentVar <- round(100 * attr(pcaData[[i]], "percentVar"))
     
     pca_df <- data.frame(pcaData[[i]],
-                         time = samples$time[samples$sex == i],
-                         age = samples$age[samples$sex == i]
+                         time = samples$time[samples$gender == i]
                          )
     
     ### pca plot rewite
-    png(paste0("plot/pca_", i, ".png"))
+    png(paste0("plot/pca_", gender_letter, ".png"))
     print(
-    ggplot(pca_df, aes(x = PC1, y = PC2, color = time, shape = age)) +
+    ggplot(pca_df, aes(x = PC1, y = PC2, color = time)) +
       geom_point(size = 3) +
       xlab(paste0("PC1: ", percentVar[1], "% variance")) +
       ylab(paste0("PC2: ", percentVar[2], "% variance")) +
@@ -157,6 +186,21 @@ for (i in gender_id) {
 
     cat("\n")
 }
+# calculating PCA for dds female 
+#          PC1       PC2 group time name
+# 1 -5.8925172  8.718160   pre  pre    1
+# 2 -0.7584437  9.897606  post post    2
+# 5 -5.1521836 -7.933238   pre  pre    5
+# 6 -9.5585536 -8.249404  post post    6
+# 7  2.5663501 -3.683785   pre  pre    7
+# 8  7.5281312 -6.484747  post post    8
+# 
+# calculating PCA for dds male 
+#           PC1       PC2 group time name
+# 3  -11.324007  3.173347   pre  pre    3
+# 4   -5.142259 -4.176294  post post    4
+# 15   8.858219  5.462419   pre  pre   15
+# 16   7.608048 -4.459473  post post   16
 
 
 
@@ -171,18 +215,56 @@ for (i in gender_id) {
     cat("\n")
     
     summary(res[[i]])  # FDR < 0.1
-    # out of 47412 with nonzero total read count
-    # adjusted p-value < 0.1
-    # LFC > 0 (up)       : 2209, 4.7%
-    # LFC < 0 (down)     : 2380, 5%
-    # outliers [1]       : 0, 0%
-    # low counts [2]     : 23900, 50%
-    # (mean count < 3)
-    # [1] see 'cooksCutoff' argument of ?results
-    # [2] see 'independentFiltering' argument of ?results
-    
     cat("\n")
     }
+# [1] "female"
+# log2 fold change (MLE): time post vs pre 
+# Wald test p-value: time post vs pre 
+# DataFrame with 6 rows and 6 columns
+# baseMean log2FoldChange     lfcSE       stat    pvalue      padj
+# <numeric>      <numeric> <numeric>  <numeric> <numeric> <numeric>
+# ENSG00000284662   0.205998     0.03509519  3.085594  0.0113739  0.990925  0.999995
+# ENSG00000186827   5.917091    -0.15466780  0.519766 -0.2975718  0.766030  0.999995
+# ENSG00000186891   0.938536     0.49205360  1.199766  0.4101247  0.681714  0.999995
+# ENSG00000160072 125.967796     0.00880607  0.139090  0.0633120  0.949518  0.999995
+# ENSG00000041988  47.036213    -0.08747999  0.188047 -0.4652036  0.641786  0.999995
+# ENSG00000260179   3.643064    -0.05506193  0.686311 -0.0802289  0.936055  0.999995
+# 
+# out of 47705 with nonzero total read count
+# adjusted p-value < 0.1
+# LFC > 0 (up)       : 0, 0%
+# LFC < 0 (down)     : 1, 0.0021%
+# outliers [1]       : 0, 0%
+# low counts [2]     : 0, 0%
+# (mean count < 0)
+# [1] see 'cooksCutoff' argument of ?results
+# [2] see 'independentFiltering' argument of ?results
+# 
+# 
+# [1] "male"
+# log2 fold change (MLE): time post vs pre 
+# Wald test p-value: time post vs pre 
+# DataFrame with 6 rows and 6 columns
+# baseMean log2FoldChange     lfcSE        stat    pvalue      padj
+# <numeric>      <numeric> <numeric>   <numeric> <numeric> <numeric>
+# ENSG00000186827   6.747917     -0.1993291  1.403643 -0.14200842  0.887073        NA
+# ENSG00000186891   0.728657      0.5081277  4.604596  0.11035231  0.912130        NA
+# ENSG00000160072 178.552910      0.1316133  0.322689  0.40786418  0.683373        NA
+# ENSG00000041988  71.720699      0.0446927  0.468669  0.09536094  0.924028        NA
+# ENSG00000260179   4.392608      1.0323010  1.736686  0.59440840  0.552239        NA
+# ENSG00000234396   0.431803     -0.0316639  4.887701 -0.00647828  0.994831        NA
+# 
+# out of 43558 with nonzero total read count
+# adjusted p-value < 0.1
+# LFC > 0 (up)       : 11, 0.025%
+# LFC < 0 (down)     : 26, 0.06%
+# outliers [1]       : 0, 0%
+# low counts [2]     : 38846, 89%
+# (mean count < 388)
+# [1] see 'cooksCutoff' argument of ?results
+# [2] see 'independentFiltering' argument of ?results
+
+
 
 #### results memo ####
 ### head(res[[m]]) ----
@@ -235,6 +317,7 @@ for (i in gender_id) {
 library(RColorBrewer)
 resSig = list()
 for (i in gender_id) {
+    gender_letter <- str_sub(i, 1, 1)  
     # lower the FDR to 0.05
     cat("results for", i, "\n")
     results <- res[[i]]
@@ -249,17 +332,17 @@ for (i in gender_id) {
     resSig[[i]] <- subset(results, padj < 0.1)
     ressig <- resSig[[i]]
     # strongest down-regulation
-    cat("strongest upregulation", "\n")
+    cat("strongest upregulation: adj.p < 0.1", "\n")
     print(head(ressig[order(ressig$log2FoldChange),]))
     cat("\n")
     
     # strongest upregulation
-    cat("strongest upregulation", "\n")
+    cat("strongest upregulation: adj.p < 0.1", "\n")
     print(head(ressig[order(-ressig$log2FoldChange),]))
     cat("\n")
     
     ## histgram ##
-    png(paste0("plot/hist_p_adjp_", i, ".png"), width = 1280, height = 800)
+    png(paste0("plot/hist_p_adjp_", gender_letter, ".png"), width = 1280, height = 800)
     par(mfrow = c(1,2))
     hist(results$pvalue, col = brewer.pal(3, name = "Set2")[1], 
          main = paste(i, "Pval"), xlab  = NULL)
@@ -269,73 +352,63 @@ for (i in gender_id) {
     }
 
 ## memo ##
-# results for m 
-# p < 0.05: 3860 
-# p < 0.01: 1955 
-# p < 0.001: 963 
-# adj.P < 0.1: 1878 
-# adj.P < 0.05: 1371 
-# adj.P < 0.01: 762 
+# results for female 
+# p < 0.05: 370 
+# p < 0.01: 83 
+# p < 0.001: 23 
+# adj.P < 0.1: 1 
+# adj.P < 0.05: 1 
+# adj.P < 0.01: 1 
 # 
-# strongest upregulation 
+# strongest upregulation: adj.p < 0.1 
+# log2 fold change (MLE): time post vs pre 
+# Wald test p-value: time post vs pre 
+# DataFrame with 1 row and 6 columns
+# baseMean log2FoldChange     lfcSE      stat      pvalue        padj
+# <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric>
+# ENSG00000141526   379.068      -0.605803  0.103204  -5.86996 4.35901e-09 0.000207946
+# 
+# strongest upregulation: adj.p < 0.1 
+# log2 fold change (MLE): time post vs pre 
+# Wald test p-value: time post vs pre 
+# DataFrame with 1 row and 6 columns
+#                  baseMean log2FoldChange     lfcSE      stat      pvalue        padj
+#                 <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric>
+# ENSG00000141526   379.068      -0.605803  0.103204  -5.86996 4.35901e-09 0.000207946
+# 
+# results for male 
+# p < 0.05: 345 
+# p < 0.01: 129 
+# p < 0.001: 45 
+# adj.P < 0.1: 37 
+# adj.P < 0.05: 13 
+# adj.P < 0.01: 4 
+# 
+# strongest upregulation: adj.p < 0.1 
 # log2 fold change (MLE): time post vs pre 
 # Wald test p-value: time post vs pre 
 # DataFrame with 6 rows and 6 columns
 #                  baseMean log2FoldChange     lfcSE      stat      pvalue        padj
-#                  <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric>
-# ENSG00000227496  116.5837       -3.29135  0.374483  -8.78906 1.50819e-18 2.19209e-15
-# ENSG00000174502   33.6753       -2.76794  0.420414  -6.58385 4.58415e-11 1.60403e-08
-# ENSG00000286986   18.1806       -2.26824  0.384207  -5.90369 3.55456e-09 7.71992e-07
-# ENSG00000129988   28.2626       -2.11128  0.319719  -6.60356 4.01410e-11 1.54788e-08
-# ENSG00000106366   16.8828       -1.96804  0.268462  -7.33082 2.28756e-13 1.60656e-10
-# ENSG00000041982   46.8292       -1.88652  0.356130  -5.29729 1.17531e-07 1.48050e-05
+#                 <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric>
+# ENSG00000166147  2364.727       -1.22481  0.214592  -5.70763 1.14560e-08 5.39805e-05
+# ENSG00000091986   520.469       -1.17224  0.262283  -4.46937 7.84507e-06 9.24149e-03
+# ENSG00000038427   527.286       -1.13040  0.241148  -4.68756 2.76482e-06 4.34260e-03
+# ENSG00000077009  1232.935       -1.06921  0.249428  -4.28666 1.81376e-05 1.70929e-02
+# ENSG00000181418  1261.963       -1.05848  0.211312  -5.00910 5.46852e-07 1.28838e-03
+# ENSG00000199990  1076.376       -1.01623  0.249392  -4.07482 4.60492e-05 2.39909e-02
 # 
-# strongest upregulation 
+# strongest upregulation: adj.p < 0.1 
 # log2 fold change (MLE): time post vs pre 
 # Wald test p-value: time post vs pre 
 # DataFrame with 6 rows and 6 columns
-#                  baseMean log2FoldChange     lfcSE      stat      pvalue        padj
-#                  <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric>
-# ENSG00000125740   13.2386        2.63516  0.451009   5.84282 5.13255e-09 1.05412e-06
-# ENSG00000170345  386.0794        1.87227  0.579366   3.23158 1.23106e-03 2.32376e-02
-# ENSG00000136244   10.9666        1.79353  0.593338   3.02278 2.50465e-03 3.84134e-02
-# ENSG00000120738  101.5929        1.56216  0.442272   3.53214 4.12213e-04 1.01284e-02
-# ENSG00000248359   18.7395        1.55260  0.367012   4.23038 2.33300e-05 1.10205e-03
-# ENSG00000170525 2484.2871        1.50181  0.273723   5.48660 4.09747e-08 6.04856e-06
-# 
-# results for f 
-# p < 0.05: 4374 
-# p < 0.01: 2281 
-# p < 0.001: 1095 
-# adj.P < 0.1: 2415 
-# adj.P < 0.05: 1701 
-# adj.P < 0.01: 875 
-# 
-# strongest upregulation 
-# log2 fold change (MLE): time post vs pre 
-# Wald test p-value: time post vs pre 
-# DataFrame with 6 rows and 6 columns
-#                  baseMean log2FoldChange     lfcSE      stat      pvalue        padj
-#                  <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric>
-# ENSG00000227496   87.5117       -2.91255  0.350301  -8.31440 9.22145e-17 1.08666e-13
-# ENSG00000129988   23.6534       -2.45880  0.524685  -4.68623 2.78284e-06 1.75677e-04
-# ENSG00000006327   67.6641       -2.35358  0.410713  -5.73048 1.00147e-08 1.56655e-06
-# ENSG00000286986   11.2858       -2.06700  0.353898  -5.84066 5.19942e-09 9.37805e-07
-# ENSG00000119508  102.5864       -1.84395  0.566986  -3.25219 1.14518e-03 1.82526e-02
-# ENSG00000167772   58.4354       -1.79976  0.583276  -3.08561 2.03137e-03 2.72027e-02
-# 
-# strongest upregulation 
-# log2 fold change (MLE): time post vs pre 
-# Wald test p-value: time post vs pre 
-# DataFrame with 6 rows and 6 columns
-#                  baseMean log2FoldChange     lfcSE      stat      pvalue        padj
-#                  <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric>
-# ENSG00000205215   40.2066        1.81933  0.398505   4.56538 4.98593e-06 2.81570e-04
-# ENSG00000205266   37.1814        1.78999  0.349877   5.11606 3.11980e-07 2.94896e-05
-# ENSG00000226549   18.1802        1.78891  0.468998   3.81433 1.36555e-04 3.84354e-03
-# ENSG00000170525 2680.8799        1.68915  0.314090   5.37793 7.53465e-08 8.32168e-06
-# ENSG00000248461   19.5651        1.64191  0.325261   5.04798 4.46508e-07 3.90717e-05
-# ENSG00000205312   55.0392        1.63692  0.375065   4.36437 1.27489e-05 5.94589e-04
+#                  baseMean log2FoldChange     lfcSE      stat      pvalue      padj
+#                 <numeric>      <numeric> <numeric> <numeric>   <numeric> <numeric>
+# ENSG00000269736   866.097       1.284974  0.310532   4.13797 3.50395e-05 0.0235866
+# ENSG00000283657   865.949       0.903511  0.250194   3.61124 3.04734e-04 0.0668574
+# ENSG00000240474   554.033       0.859089  0.231913   3.70436 2.11922e-04 0.0554763
+# ENSG00000215187   497.047       0.851491  0.236197   3.60500 3.12153e-04 0.0668574
+# ENSG00000234594   863.119       0.821293  0.242148   3.39170 6.94602e-04 0.0935914
+# ENSG00000123689  1826.808       0.818497  0.196593   4.16340 3.13537e-05 0.0235866
 
 
 
@@ -344,6 +417,7 @@ library("AnnotationDbi")
 library("Homo.sapiens")
 # columns(Homo.sapiens)
 for (i in gender_id) {
+    gender_letter <- str_sub(i, 1, 1)  
     cat("annotating", i, "\n")  
     results <- resSig[[i]]  
     results$symbol <- mapIds(Homo.sapiens,
@@ -365,50 +439,38 @@ for (i in gender_id) {
     # res <- subset(res,!duplicated(res$symbol))
     # dim(res)  # [1] 17752     7
     
-    write.csv(results, paste0("resGSE162730", i, ".csv"))
+    write.csv(results, paste0("resGSE162730", gender_letter, ".csv"))
 }
 
 ## memo ##
-# annotating m 
-# 'select()' returned 1:many mapping between keys and columns
+# annotating female 
+# 'select()' returned 1:1 mapping between keys and columns
+# head(results, 3): 
+# log2 fold change (MLE): time post vs pre 
+# Wald test p-value: time post vs pre 
+# DataFrame with 1 row and 7 columns
+#                  baseMean log2FoldChange     lfcSE      stat      pvalue        padj      symbol
+#                 <numeric>      <numeric> <numeric> <numeric>   <numeric>   <numeric> <character>
+# ENSG00000141526   379.068      -0.605803  0.103204  -5.86996 4.35901e-09 0.000207946     SLC16A3
+# 
+# dim(results): 
+# [1] 1 7
+# 
+# 
+# annotating male 
+# 'select()' returned 1:1 mapping between keys and columns
 # head(results, 3): 
 # log2 fold change (MLE): time post vs pre 
 # Wald test p-value: time post vs pre 
 # DataFrame with 3 rows and 7 columns
-#                 baseMean log2FoldChange     lfcSE      stat      pvalue
-#                 <numeric>      <numeric> <numeric> <numeric>   <numeric>
-# ENSG00000224051   258.402      -0.626479 0.1228123  -5.10111 3.37661e-07
-# ENSG00000162494   149.988       0.337795 0.1303520   2.59141 9.55849e-03
-# ENSG00000159423   538.822      -0.310330 0.0949877  -3.26706 1.08672e-03
-#                     padj      symbol
-#                   <numeric> <character>
-# ENSG00000224051 0.000035643        CPTP
-# ENSG00000162494 0.097678532      LRRC38
-# ENSG00000159423 0.021256329     ALDH4A1
+#                  baseMean log2FoldChange     lfcSE      stat      pvalue      padj      symbol
+#                 <numeric>      <numeric> <numeric> <numeric>   <numeric> <numeric> <character>
+# ENSG00000123689  1826.808       0.818497  0.196593   4.16340 3.13537e-05 0.0235866        G0S2
+# ENSG00000202031  1442.986      -0.745542  0.194097  -3.84108 1.22497e-04 0.0449423    SNORD38A
+# ENSG00000207241   562.184      -0.803471  0.231473  -3.47112 5.18288e-04 0.0897698    SNORD45A
 # 
 # dim(results): 
-# [1] 1878    7
-
-
-# annotating f 
-# 'select()' returned 1:many mapping between keys and columns
-# head(results, 3): 
-# log2 fold change (MLE): time post vs pre 
-# Wald test p-value: time post vs pre 
-# DataFrame with 3 rows and 7 columns
-#                 baseMean log2FoldChange     lfcSE      stat     pvalue      padj
-#                 <numeric>      <numeric> <numeric> <numeric>  <numeric> <numeric>
-# ENSG00000169972   25.5158       0.554527  0.186821   2.96823 0.00299518 0.0360155
-# ENSG00000162591   70.7050       0.368828  0.140824   2.61906 0.00881714 0.0750639
-# ENSG00000142583  575.7197      -0.259946  0.104325  -2.49170 0.01271332 0.0955852
-#                       symbol
-#                   <character>
-# ENSG00000169972       PUSL1
-# ENSG00000162591       MEGF6
-# ENSG00000142583      SLC2A5
-# 
-# dim(results): 
-# [1] 2415    7
+# [1] 37  7
 
 
 
@@ -416,12 +478,14 @@ for (i in gender_id) {
 library(EnhancedVolcano)
 library(patchwork)
 
-result_files <- list.files(pattern = ".csv")
+# str_view(list.files(), "res.*csv")
+result_files <- list.files(pattern = "res.*csv")
 result_files
+# "resGSE162730f.csv" "resGSE162730m.csv"
 for (i in 1:length(result_files)) {
     file <- result_files[i]
     results <- read.csv(file)
-    name <- str_sub(file, 4, 13)
+    name <- str_sub(file, 4, 12)
     group <- str_sub(file, -5, -5)
     
     p1 <-
