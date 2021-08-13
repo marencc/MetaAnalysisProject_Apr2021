@@ -1,5 +1,5 @@
 # ref: https://www.bioconductor.org/packages/devel/workflows/vignettes/rnaseqGene/inst/doc/rnaseqGene.html
-setwd("/Volumes/HDD24TB/MetaAnalysisProject_Apr2021/inactive/GSE113165")
+setwd("/Volumes/HDD24TB/MetaAnalysisProject_Apr2021/inactive/GSE162730")
 
 #### helpers ####
 library("stringr")
@@ -9,7 +9,6 @@ library("magrittr")
 library("ggplot2")
 
 #### Importing Data ####
-# samples <- read.table("pdata.txt", sep = "\t", header = TRUE)
 samples <- read.table("sampletable.txt", sep = "\t", header = TRUE)
 head(samples, 3)
 #                   run age sample.name sex subject susceptibility time  color
@@ -366,7 +365,7 @@ for (i in gender_id) {
     # res <- subset(res,!duplicated(res$symbol))
     # dim(res)  # [1] 17752     7
     
-    write.csv(results, paste0("resGSE113165", i, ".csv"))
+    write.csv(results, paste0("resGSE162730", i, ".csv"))
 }
 
 ## memo ##
