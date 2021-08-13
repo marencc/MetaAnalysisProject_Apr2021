@@ -17,9 +17,9 @@ mkdir -p ${TARGETDIR}/fastq_Rnaseq/star
 OUTDIR="${TARGETDIR}/fastq_Rnaseq/star"
 
 # file ids
-FILEIDS="${TARGETDIR}/SRR_Acc_List_rna_unique.txt"  # SRR_Acc_List.txt  qclist.txt
+FILEIDS="${TARGETDIR}/SRR_Acc_List_rna.txt"  # SRR_Acc_List.txt  qclist.txt
 FILES=`cat ${FILEIDS} | wc -l`  # number of files
-# RIBOSEQALLFILEID="${TARGETDIR}/SRR_Acc_List_ribo_unique.txt"
+# RIBOSEQALLFILEID="${TARGETDIR}/SRR_Acc_List_ribo.txt"
 # RIBOSEQALLFILES=`cat ${ROBPSEQALLFILEID} | wc -l`
 
 # ensemble index
@@ -34,7 +34,7 @@ count=1
 
 cat ${FILEIDS} | while read line; do
     SECONDS=0
-    echo `date "+%m/%d/%Y %H:%M:%S"` STAR ${count} /${FILES}: ${line} "(${TARGET})"
+    echo STAR ${count} /${FILES}: ${line} `date "+%m/%d/%Y %H:%M:%S"`
     
     echo decompressing fastq.gz...
     ### check last 4 lines
