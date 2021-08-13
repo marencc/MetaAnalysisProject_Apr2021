@@ -26,10 +26,10 @@ count=1
 cat $FILEIDS | while read line; do
     SECONDS=0
     echo `date "+%m/%d/%Y %H:%M:%S"` fasterq-dump ${count} /${FILES}: ${line} "(${TARGET})"
-    fasterq-dump ${line} --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 10 --progress
+    fasterq-dump ${line} --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 8 --progress
     
     echo `date "+%m/%d/%Y %H:%M:%S"` compressing...
-    pigz -p 10 ${OUTDIR}/${line}.fastq
+    pigz -p 8 ${OUTDIR}/${line}.fastq
     
     # processed time for one file
     echo `date "+%m/%d/%Y %H:%M:%S"` finished ${line}
