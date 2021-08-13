@@ -10,6 +10,7 @@
 female results only 1 (FDR < 0.1)
 ・基準見直す？
 ・featureCountのcount rateが良くなかった(50%前後)ので、やり方を変えてやり直す？
+・rRna 除去する?(starで)
 
 
 8/11/2021
