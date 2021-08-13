@@ -13,8 +13,9 @@ mkdir -p ${PROJECTDIR}/${TYPE}/${TARGET}
 TARGETDIR=${PROJECTDIR}/${TYPE}/${TARGET}
 
 # input information
-FILEIDS=${TARGETDIR}/SRR_Acc_List.txt
-FILES=`cat ${FILEIDS} | wc -l`
+ALLFILEIDS=${TARGETDIR}/SRR_Acc_List.txt
+RESTFILEIDS=${TARGETDIR}/SRR_Acc_List_rest.txt
+FILES=`cat ${ALLFILEIDS} | wc -l`
 
 # output directory
 mkdir -p ${TARGETDIR}/fastq
@@ -24,12 +25,11 @@ TEMPDIR=${OUTDIR}/temp
 count=1
 cat $FILEIDS | while read line; do
     SECONDS=0
-    echo `date "+%m/%d/%Y %H:%M:%S"`
-    echo fasterq-dump ${count} /${FILES}: ${line} (${TARGET})
-    fasterq-dump ${line} --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 4 --progress
+    echo `date "+%m/%d/%Y %H:%M:%S"` fasterq-dump ${count} /${FILES}: ${line} "(${TARGET})"
+    fasterq-dump ${line} --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 10 --progress
     
     echo `date "+%m/%d/%Y %H:%M:%S"` compressing...
-    pigz -p 4 ${OUTDIR}/${line}.fastq
+    pigz -p 10 ${OUTDIR}/${line}.fastq
     
     # processed time for one file
     echo `date "+%m/%d/%Y %H:%M:%S"` finished ${line}
