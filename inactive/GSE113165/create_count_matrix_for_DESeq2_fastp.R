@@ -7,65 +7,70 @@ library("dplyr")
 library("tidyr")
 
 #### Importing Data ####
+# count matrix ----
 counts <- read.table("counts.fastp.txt", sep = "\t", header = TRUE)
 head(counts)
 View(counts)
 rownames(counts) <- counts$Geneid
+counts <- counts[,7:ncol(counts)]
 colnames(counts) <- sub(".fastp.fastq.sort.bam", "", colnames(counts))
+counts[1:5,1:5]
+#                 SRR7007949 SRR7007950 SRR7007951 SRR7007952 SRR7007953
+# ENSG00000284662          9          4          2          4         12
+# ENSG00000186827          3         23         14         11          7
+# ENSG00000186891          1          2          0          0          1
+# ENSG00000160072        154        168        153        198        195
+# ENSG00000041988         88         78         99        132        115
 
-# samples <- read.table("pdata.txt", sep = "\t", header = TRUE)
+
+# sample table ----
 samples <- read.table("SraRunTable.txt", sep = ",", header = TRUE)
-samples <- samples[,c("Run", "age", "Sample.Name", "sex", "Subject", "susceptibility", "Time")]
+samples <- samples[,c("Run", "Subject", "sex", "age", "Time")]
 names(samples) <- tolower(names(samples))
-head(samples, 3)
-#          run age sample.name  sex subject susceptibility          time
-# 1 SRR7007949 old  GSM3098323 male    3005            low  pre bed rest
-# 2 SRR7007950 old  GSM3098324 male    3005            low post bed rest
-# 3 SRR7007951 old  GSM3098325 male    3008            low  pre bed rest
-
-# samples$Time <- ifelse(str_detect(samples$Time, "pre"), "pre", "post")
-
-# tiding up sample information
-samples$age <- relevel(as.factor(samples$age), ref = "young")
-samples$sex <- str_sub(samples$sex, 1, 1)
-samples$sex <- relevel(as.factor(samples$sex), ref = "m")
+names(samples)[3] <- "gender"
 samples$subject <- paste0("S", samples$subject)
-samples$susceptibility <- str_replace(samples$susceptibility, "Not used in Susceptibility Study", "NA")
-samples$susceptibility <- as.factor(samples$susceptibility)
 samples$time <- ifelse(str_detect(samples$time, "pre"), "pre", "post")
-samples$time <- relevel(as.factor(samples$time), ref = "pre")
-summary(samples)
-# run                age        sample.name        sex    subject            susceptibility time   
-# Length:56          young:18   Length:56          m:26   Length:56          high:24        pre :28  
-# Class :character   old  :38   Class :character   f:30   Class :character   low :28        post:28  
-# Mode  :character              Mode  :character          Mode  :character   NA  : 4 
-
 head(samples, 3)
-#          run age sample.name sex subject susceptibility time
-# 1 SRR7007949 old  GSM3098323   m   S3005            low  pre
-# 2 SRR7007950 old  GSM3098324   m   S3005            low post
-# 3 SRR7007951 old  GSM3098325   m   S3008            low  pre
+#          run subject gender age time
+# 1 SRR7007949   S3005   male old  pre
+# 2 SRR7007950   S3005   male old post
+# 3 SRR7007951   S3008   male old  pre
 
-table(samples$sex, samples$time)
-#   pre post
-# m  13   13
-# f  15   15
+table(samples$gender, samples$time)
+#         post pre
+# female   15  15
+# male     13  13
 
-col.time <- c("pre"="blue","post"="orange")
-samples$color <- col.time[as.vector(samples$time)]
-head(samples)
+table(samples$gender, samples$age)
+#         old young
+# female  16    14
+# male    22     4
 
 
-# writing out tables
+
+#### writing out tables ####
 counts <- counts[,match(samples$run, colnames(counts))]
-# write.table(samples, "sampletable.txt", sep = "\t", col.names = TRUE, row.names = samples$run)  # already there
+write.table(samples, "sampletable.txt", sep = "\t", col.names = TRUE, row.names = samples$run)
 write.table(counts, "countmat.fastp.txt", sep = "\t", col.names = TRUE)
 
-# checking the data
-c <- read.table("countmat.fastp.txt", sep = "\t", header = TRUE)
-head(c)
-dim(c)  # 60664    56
-
+#### checking the data ####
 s <- read.table("sampletable.txt", sep = "\t", header = TRUE)
 head(s)
-dim(s)  # 56  8
+#                   run subject gender age time
+# SRR7007949 SRR7007949   S3005   male old  pre
+# SRR7007950 SRR7007950   S3005   male old post
+# SRR7007951 SRR7007951   S3008   male old  pre
+# SRR7007952 SRR7007952   S3008   male old post
+# SRR7007953 SRR7007953   S3010   male old  pre
+# SRR7007954 SRR7007954   S3010   male old post
+dim(s)  # 56  5
+
+c <- read.table("countmat.fastp.txt", sep = "\t", header = TRUE)
+c[1:5, 1:5]
+#                 SRR7007949 SRR7007950 SRR7007951 SRR7007952 SRR7007953
+# ENSG00000284662          9          4          2          4         12
+# ENSG00000186827          3         23         14         11          7
+# ENSG00000186891          1          2          0          0          1
+# ENSG00000160072        154        168        153        198        195
+# ENSG00000041988         88         78         99        132        115
+dim(c)  # 60664    56

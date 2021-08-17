@@ -12,31 +12,38 @@ library("ggplot2")
 # samples <- read.table("pdata.txt", sep = "\t", header = TRUE)
 samples <- read.table("sampletable.txt", sep = "\t", header = TRUE)
 head(samples, 3)
-#                   run age sample.name sex subject susceptibility time  color
-# SRR7007949 SRR7007949 old  GSM3098323   m   S3005            low  pre   blue
-# SRR7007950 SRR7007950 old  GSM3098324   m   S3005            low post orange
-# SRR7007951 SRR7007951 old  GSM3098325   m   S3008            low  pre   blue
+#                   run subject gender age time
+# SRR7007949 SRR7007949   S3005   male old  pre
+# SRR7007950 SRR7007950   S3005   male old post
+# SRR7007951 SRR7007951   S3008   male old  pre
 
 counts <- read.table("countmat.fastp.txt", sep = "\t", header = TRUE)
-head(counts)
+counts[1:5, 1:5]
+#                 SRR7007949 SRR7007950 SRR7007951 SRR7007952 SRR7007953
+# ENSG00000284662          9          4          2          4         12
+# ENSG00000186827          3         23         14         11          7
+# ENSG00000186891          1          2          0          0          1
+# ENSG00000160072        154        168        153        198        195
+# ENSG00000041988         88         78         99        132        115
 dim(counts)  # 60664    56
+
 
 
 #### Constructing DESeqDataSet (DESeqDataSetFromMatrix) ####
 library("DESeq2")
-gender_id = unique(samples$sex)
+gender_id = unique(samples$gender)
 dds <- list()
 for (i in gender_id) {
     print(i)
-    coldata <- samples[samples$sex == i,]
+    coldata <- samples[samples$gender == i,]
     countdata <- counts[,rownames(coldata)]
     dds[[i]] <- DESeqDataSetFromMatrix(countData = countdata,
                                        colData = coldata, 
-                                       design = ~ subject + time)  # ref = "pre"
+                                       design = ~ subject + time)
     print(dds[[i]])
     cat("\n")
     }
-# [1] "m"
+# [1] "male"
 # class: DESeqDataSet 
 # dim: 60664 26 
 # metadata(1): version
@@ -46,7 +53,7 @@ for (i in gender_id) {
 #   colnames(26): SRR7007949 SRR7007950 ... SRR7007993 SRR7007994
 # colData names(8): run age ... time color
 # 
-# [1] "f"
+# [1] "female"
 # class: DESeqDataSet 
 # dim: 60664 30 
 # metadata(1): version
@@ -66,13 +73,13 @@ for (i in gender_id) {
     cat(dim(dds[[i]]), "\n")  # 45771    56
     cat(dim(colData(dds[[i]])), "\n\n")  # 56  8
 }
-# dds m 
+# dds male 
 # 43164 26 
-# 26 8 
+# 26 5 
 # 
-# dds f 
+# dds female 
 # 42250 30 
-# 30 8 
+# 30 5 
 
 
 # cf. at least 3 samples with a count of 10 or higher
@@ -88,24 +95,25 @@ dir.create("plot")
 
 # 1. Normalization ---
 for (i in gender_id) {
+    gender_letter <- str_sub(i, 1, 1)  
     dds[[i]] <- estimateSizeFactors(dds[[i]])
     
     # 2-1. box-plot ----
-    png(paste0("plot/boxplot_check_normalization_", i, ".png"), width = 1280, height = 800)
+    png(paste0("plot/boxplot_check_normalization_", gender_letter, ".png"), width = 1280, height = 800)
     par(mfrow = c(1, 2), mar = c(5,5,4,2))
-    boxplot(log2(counts(dds[[i]]) + 1), col = dds[[i]]$color, cex.axis = 0.7, 
+    boxplot(log2(counts(dds[[i]]) + 1), cex.axis = 0.7, 
             las = 1, xlab = "log2(counts)", horizontal = TRUE, main = paste0(i, " Raw counts"))
-    boxplot(log2(counts(dds[[i]], normalized = TRUE) + 1), col = dds[[i]]$color, cex.axis = 0.7, 
+    boxplot(log2(counts(dds[[i]], normalized = TRUE) + 1), cex.axis = 0.7, 
             las = 1, xlab = "log2(normalized counts)", horizontal = TRUE, main = "Normalized counts") 
     dev.off()
     
     # 2.2 density-plot ----
     library(affy)
-    png(paste0("plot/densityplot_check_normalization_", i, ".png"), width = 1280, height = 800)
+    png(paste0("plot/densityplot_check_normalization_", gender_letter, ".png"), width = 1280, height = 800)
     par(mfrow = c(1, 2), mar = c(5,5,4,2))
-    plotDensity(log2(counts(dds[[i]]) + 1),  col = dds[[i]]$color, 
+    plotDensity(log2(counts(dds[[i]]) + 1),
                 xlab = paste0(i, " log2(counts)"), cex.lab = 0.7, panel.first = grid()) 
-    plotDensity(log2(counts(dds[[i]], normalized = TRUE) + 1), col = dds[[i]]$color, 
+    plotDensity(log2(counts(dds[[i]], normalized = TRUE) + 1),
                 xlab = "log2(normalized counts)", cex.lab = 0.7, panel.first = grid())
     dev.off()
 }
@@ -117,13 +125,29 @@ vsd = list()
 for (i in gender_id) {
   vsd[[i]] <- vst(dds[[i]], blind = FALSE)
   cat("vsd ", i, "\n")
-  print(head(assay(vsd[[i]]), 3))
+  print(assay(vsd[[i]])[1:5, 1:5])
   cat("\n")
 }
 # blind = FALSE: means that differences between cell lines and treatment 
 # (the variables in the design) will not contribute to the expected variance-mean trend of the experiment
 
-# these will be used soon
+# these will be used for PCA plot
+# vsd  male 
+# SRR7007949 SRR7007950 SRR7007951 SRR7007952 SRR7007953
+# ENSG00000284662   5.888296   5.625707   5.483992   5.606308   5.918535
+# ENSG00000186827   5.578088   6.271543   6.026989   5.903236   5.739142
+# ENSG00000186891   5.396487   5.486257   5.146958   5.146958   5.372128
+# ENSG00000160072   7.839329   7.850530   7.738680   7.936914   7.871279
+# ENSG00000041988   7.288550   7.114665   7.314042   7.520123   7.345189
+# 
+# vsd  female 
+# SRR7007959 SRR7007960 SRR7007971 SRR7007972 SRR7007973
+# ENSG00000284662   5.388084   5.357162   5.453702   5.372651   5.514264
+# ENSG00000186827   5.388084   5.678747   5.340906   5.745226   5.803522
+# ENSG00000186891   5.067202   5.272407   5.067202   5.067202   5.383952
+# ENSG00000160072   7.874223   7.727235   7.403795   7.360128   7.297004
+# ENSG00000041988   7.162992   6.882574   7.090246   7.198588   7.199933
+
 
 # cf. rlog()
 # n < 30 dataset might go well with rlog()
@@ -131,39 +155,59 @@ for (i in gender_id) {
 # head(assay(rld), 3)
 
 
+
 # 4. PCA plot ----
 pcaData = list()
 for (i in gender_id) {
+    gender_letter <- str_sub(i, 1, 1)    
     cat("calculating PCA for dds", i, "\n")
     pcaData[[i]] <- plotPCA(vsd[[i]], intgroup = c("time"), returnData = TRUE)
     print(head(pcaData[[i]]))
     percentVar <- round(100 * attr(pcaData[[i]], "percentVar"))
     
     pca_df <- data.frame(pcaData[[i]],
-                         time = samples$time[samples$sex == i],
-                         age = samples$age[samples$sex == i]
+                         time = samples$time[samples$gender == i],
+                         age = samples$age[samples$gender == i]
                          )
     
     ### pca plot rewite
-    png(paste0("plot/pca_", i, ".png"))
+    png(paste0("plot/pca_", gender_letter, ".png"))
     print(
     ggplot(pca_df, aes(x = PC1, y = PC2, color = time, shape = age)) +
       geom_point(size = 3) +
       xlab(paste0("PC1: ", percentVar[1], "% variance")) +
       ylab(paste0("PC2: ", percentVar[2], "% variance")) +
       coord_fixed() +
-      ggtitle(paste0("PCA with VST data ", i))
+      ggtitle(paste0("PCA with VST data ", gender_letter))
     )
     dev.off()
 
     cat("\n")
 }
+# calculating PCA for dds male 
+# PC1       PC2 group time       name
+# SRR7007949 -13.356014  9.680155   pre  pre SRR7007949
+# SRR7007950 -10.164726  6.537911  post post SRR7007950
+# SRR7007951  -9.444039  3.697176   pre  pre SRR7007951
+# SRR7007952  -8.871973  4.686951  post post SRR7007952
+# SRR7007953  -7.102402 -3.803158   pre  pre SRR7007953
+# SRR7007954  -9.305616  8.834624  post post SRR7007954
+# 
+# calculating PCA for dds female 
+# PC1        PC2 group time       name
+# SRR7007959 -1.986666 23.2517898   pre  pre SRR7007959
+# SRR7007960 -2.794442 27.4865627  post post SRR7007960
+# SRR7007971  6.818909 -6.4074718   pre  pre SRR7007971
+# SRR7007972  4.612592  4.8911358  post post SRR7007972
+# SRR7007973 -1.360130 -4.0128047   pre  pre SRR7007973
+# SRR7007974  6.573547 -0.7215968  post post SRR7007974
 
 
 
 #### DESeq2 ####
 res = list()
 for (i in gender_id) {
+    gender_letter <- str_sub(i, 1, 1)
     print(i)
     dds[[i]]$time <- relevel(as.factor(dds[[i]]$time), ref = "pre")
     dds[[i]] <- DESeq(dds[[i]])
@@ -171,7 +215,7 @@ for (i in gender_id) {
     print(head(res[[i]]))
     cat("\n")
     
-    summary(res[[i]])  # FDR < 0.1
+    summary(res[[i]])  # FDR < 0.1  ex.
     # out of 47412 with nonzero total read count
     # adjusted p-value < 0.1
     # LFC > 0 (up)       : 2209, 4.7%
@@ -186,7 +230,7 @@ for (i in gender_id) {
     }
 
 #### results memo ####
-### head(res[[m]]) ----
+### head(res[[male]]) ----
 # log2 fold change (MLE): time post vs pre 
 # Wald test p-value: time post vs pre 
 # DataFrame with 6 rows and 6 columns
@@ -199,7 +243,7 @@ for (i in gender_id) {
 # ENSG00000041988  97.857617      0.0437376 0.0953073  0.458911 0.6462980  0.872899
 # ENSG00000260179   2.859081      0.2892322 0.5065239  0.571014 0.5679902        NA
 
-### summary(res[[m]]) ----
+### summary(res[[male]]) ----
 # out of 43164 with nonzero total read count
 # adjusted p-value < 0.1
 # LFC > 0 (up)       : 842, 2%
@@ -209,7 +253,7 @@ for (i in gender_id) {
 # (mean count < 10)
 
 
-### head(res[[f]]) ----
+### head(res[[female]]) ----
 # log2 fold change (MLE): time post vs pre 
 # Wald test p-value: time post vs pre 
 # DataFrame with 6 rows and 6 columns
@@ -222,7 +266,7 @@ for (i in gender_id) {
 # ENSG00000041988  80.218381     0.13116801  0.131364  0.9985100  0.318032  0.601431
 # ENSG00000260179   1.486128     0.30203507  0.660123  0.4575435  0.647280        NA
 
-### summary(res[[f]]) ----
+### summary(res[[female]]) ----
 # out of 42250 with nonzero total read count
 # adjusted p-value < 0.1
 # LFC > 0 (up)       : 1033, 2.4%
@@ -270,7 +314,7 @@ for (i in gender_id) {
     }
 
 ## memo ##
-# results for m 
+# results for male 
 # p < 0.05: 3860 
 # p < 0.01: 1955 
 # p < 0.001: 963 
@@ -304,7 +348,7 @@ for (i in gender_id) {
 # ENSG00000248359   18.7395        1.55260  0.367012   4.23038 2.33300e-05 1.10205e-03
 # ENSG00000170525 2484.2871        1.50181  0.273723   5.48660 4.09747e-08 6.04856e-06
 # 
-# results for f 
+# results for female 
 # p < 0.05: 4374 
 # p < 0.01: 2281 
 # p < 0.001: 1095 
@@ -366,11 +410,12 @@ for (i in gender_id) {
     # res <- subset(res,!duplicated(res$symbol))
     # dim(res)  # [1] 17752     7
     
-    write.csv(results, paste0("resGSE113165", i, ".csv"))
+    gender_letter <- str_sub(i, 1, 1)
+    write.csv(results, paste0("resGSE113165", gender_letter, ".csv"))
 }
 
 ## memo ##
-# annotating m 
+# annotating male 
 # 'select()' returned 1:many mapping between keys and columns
 # head(results, 3): 
 # log2 fold change (MLE): time post vs pre 
@@ -391,7 +436,7 @@ for (i in gender_id) {
 # [1] 1878    7
 
 
-# annotating f 
+# annotating female 
 # 'select()' returned 1:many mapping between keys and columns
 # head(results, 3): 
 # log2 fold change (MLE): time post vs pre 
@@ -602,5 +647,3 @@ for (i in 1:length(result_files)) {
 # dim(dfSig01Ordered)  # [1] 1856    7
 ###################################################
 ###################################################
-
-
