@@ -15,7 +15,7 @@ TARGETDIR=${PROJECTDIR}/${TYPE}/${TARGET}
 # input information
 ALLFILEIDS=${TARGETDIR}/SRR_Acc_List.txt
 RESTFILEIDS=${TARGETDIR}/SRR_Acc_List_rest.txt
-FILES=`cat ${ALLFILEIDS} | wc -l`
+ALLFILES=`cat ${ALLFILEIDS} | wc -l`
 RESTFILES=`cat ${RESTFILEIDS} | wc -l`
 
 # output directory
