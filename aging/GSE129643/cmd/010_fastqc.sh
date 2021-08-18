@@ -22,7 +22,7 @@ FILEIDS=${PROJECTDIR}/${TYPE}/${TARGET}/qclist.txt  # SRR_Acc_List.txt
 # run FastQC
 cd ${FILEDIR}
 cat $FILEIDS | while read line; do
-    echo FastQC: ${line}
+    echo FastQC: ${line} "(${TARGET})"
     fastqc -t 8 --nogroup -o ${OUTDIR} ${line}*.fastq.gz
     echo number of FastQC files: `ls ${OUTDIR}/*fastqc.zip | wc -l`
     echo "\n" 
