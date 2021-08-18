@@ -34,7 +34,7 @@ count=1
 
 cat ${FILEIDS} | while read line; do
     SECONDS=0
-    echo STAR ${count} /${FILES}: ${line} `date "+%m/%d/%Y %H:%M:%S"`
+    echo STAR ${count} /${FILES}: ${line} "(${TARGET})" `date "+%m/%d/%Y %H:%M:%S"`
     
     echo decompressing fastq.gz...
     ### check last 4 lines

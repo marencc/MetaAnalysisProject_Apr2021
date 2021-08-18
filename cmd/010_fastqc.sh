@@ -26,7 +26,7 @@ FILEIDS="${PROJECTDIR}/${TYPE}/${TARGET}/quality_check_list.txt" # SRR_Acc_List.
 # run FastQC
 cd ${FASTQDIR}
 cat $FILEIDS | while read line; do
-    echo FastQC: ${line}
+    echo FastQC: ${line} "(${TARGET})"
     # check which type of files to use
     # sickle
     # fastqc -t 4 --nogroup -o ${OUTDIR} ${SICKLEDIR}/${line}.trimmed.fastq.gz

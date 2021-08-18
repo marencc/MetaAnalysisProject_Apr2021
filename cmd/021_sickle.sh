@@ -18,7 +18,7 @@ FILEIDS="${PROJECTDIR}/${TYPE}/${TARGET}/SRR_Acc_List.txt"
 
 cd ${FASTQDIR} 
 cat $FILEIDS | while read line; do 
-    echo sickle: ${line} 
+    echo sickle: ${line} "(${TARGET})"
     sickle se -f ${line}.fastq.gz -t sanger -o ${OUTDIR}/${line}.sickle.fastq.gz -g 
     echo "\n" 
 done 

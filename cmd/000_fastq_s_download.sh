@@ -1,28 +1,55 @@
 #!/bin/sh
-### Obtaining fastq files by fasterq-dump using SRR Accession ids.
+# download fastq files by fasterq-dump using SRR Accession ids
 
-HDD="/Volumes/HDD24TB"
-TARGET="GSE113165"  # check
-mkdir -p ${HDD}/${TARGET}
+TYPE="aging"  # check
+TARGET="GSE164471"  # check
 
-PROJECTDIR="/Users/Emma/Documents/Bioinformatics/DEG/MetaAnalysisProject_Apr2021"
-TYPE="inactive"  # check
-FILEIDS="${PROJECTDIR}/${TYPE}/${TARGET}/SRR_Acc_List.txt"
-OUTDIR="${HDD}/${TARGET}"
-TEMPDIR="${OUTDIR}/temp/"
+PROJECTDIR=/Volumes/HDD24TB/MetaAnalysisProject_Apr2021
+mkdir -p ${PROJECTDIR}/${TYPE}/${TARGET}
+TARGETDIR=${PROJECTDIR}/${TYPE}/${TARGET}
 
+FILEIDS=${TARGET}/SRR_Acc_List.txt
+OUTDIR=${HDD}${TARGET}
+TEMPDIR=${OUTDIR}/temp
+
+# input information
+FILEIDS=${TARGETDIR}/SRR_Acc_List.txt
+FILES=`cat ${FILEIDS} | wc -l`
+# RESTFILEIDS=${TARGETDIR}/SRR_Acc_List_rest.txt
+# RESTFILES=`cat ${RESTFILEIDS} | wc -l`
+
+# output directory
+mkdir -p ${TARGETDIR}/fastq
+OUTDIR=${TARGETDIR}/fastq
+TEMPDIR=${OUTDIR}/temp
+
+count=1
 cat $FILEIDS | while read line; do
-    echo Downloading: ${line}
-    fasterq-dump ${line} \
-    --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 4 --progress
+    SECONDS=0
+    echo `date "+%m/%d/%Y %H:%M:%S"` fasterq-dump ${count} /${FILES}: ${line} "(${TARGET})"
+    fasterq-dump ${line} --temp ${TEMPDIR} --outdir ${OUTDIR} --threads 8 --progress
     
-    echo compressing...
-    pigz -p 4 ${OUTDIR}${line}.fastq
+    echo `date "+%m/%d/%Y %H:%M:%S"` compressing...
+    pigz -p 8 ${OUTDIR}/${line}.fastq
+    
+    # processed time for one file
+    echo `date "+%m/%d/%Y %H:%M:%S"` finished ${line}
+    h=$(($SECONDS/3600))
+    m=$((($SECONDS/60)%60))
+    s=$(($SECONDS%60))
+    echo processed time: ${h}:${m}:${s}
+    
+    # elapsed time so far
+    elapsed_time=`date +%s`
+    elapsed=$((elapsed_time - script_started))
+    eh=$(($elapsed/3600))
+    em=$((($elapsed/60)%60))
+    es=$(($elapsed%60))
+    echo elapsed: ${eh}:${em}:${es}
+    
+    echo processed files: `ls ${OUTDIR}/*.fastq.gz | wc -l` /${FILES}
+    count=$((count+1))
     echo "\n"
     done
 
-echo finished downloading "\n"
-
-# checking the number of files
-echo number of files downloaded: 
-ls ${OUTDIR}"*.gz" | wc -l 
+echo `date "+%m/%d/%Y %H:%M:%S"` fasterq-dump finished "\n"

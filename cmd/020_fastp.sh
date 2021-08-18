@@ -21,7 +21,7 @@ FILEIDS="${PROJECTDIR}/${TYPE}/${TARGET}/SRR_Acc_List.txt"
 cd ${FASTPDIR}
 mkdir -p html json
 cat $FILEIDS | while read line; do
-    echo fastp: ${line}
+    echo fastp: ${line} "(${TARGET})"
     # single end
     # -3: enable per read cutting by quality in tail (3'), default is disabled
     # (WARNING: this will interfere deduplication for SE data)
