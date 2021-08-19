@@ -31,12 +31,10 @@ cd ${FASTPDIR}
 count=1
 cat ${FILEIDS} | while read line; do
     SECONDS=0
-    echo `date "+%m/%d/%Y %H:%M:%S"` STAR ${count} /${FASTPFILES}: ${line}
-    
-    echo decompressing fastq.gz...
+    echo STAR ${count} /${FASTPFILES}: ${line} "(${TARGET})"
     ### check last 4 lines
     STAR \
-    --runThreadN 8 \
+    --runThreadN 10 \
     --readFilesCommand gunzip -c \
     --readFilesIn ${line}*.fastq.gz \
     --genomeDir ${INDEXDIR} \
@@ -50,7 +48,6 @@ cat ${FILEIDS} | while read line; do
     # --outFilterMismatchNmax 2 
     
     # processed time for one file
-    echo `date "+%m/%d/%Y %H:%M:%S"` finished ${line}
     h=$(($SECONDS/3600))
     m=$((($SECONDS/60)%60))
     s=$(($SECONDS%60))
@@ -69,7 +66,7 @@ cat ${FILEIDS} | while read line; do
     echo "\n"
 done
 
-echo `date "+%m/%d/%Y %H:%M:%S"` STAR finished
+echo STAR finished
 
 # moving files
 cd ${OUTDIR} # check directory name
