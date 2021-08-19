@@ -3,27 +3,25 @@
 # single end
 
 # targets
-TYPE="inactive"  # check
-TARGET="GSE162730"  # check
+TYPE="aging"  # check
+TARGET="GSE129643"  # check
 
 # directories
-PROJECTDIR="/Volumes/HDD24TB/MetaAnalysisProject_Apr2021"
-TARGETDIR="${PROJECTDIR}/${TYPE}/${TARGET}"
-FASTPDIR="${TARGETDIR}/fastq_Rnaseq/fastp"  # check
-FILES=`ls ${FASTPDIR}/*.fastq.gz | wc -l`
+PROJECTDIR=/Volumes/HDD24TB/MetaAnalysisProject_Apr2021
+TARGETDIR=${PROJECTDIR}/${TYPE}/${TARGET}
+FASTPDIR=${TARGETDIR}/fastp  # check
+FASTPFILES=`ls ${FASTPDIR}/*.fastq.gz | wc -l`
 
 # STAR output directory
-mkdir -p ${TARGETDIR}/fastq_Rnaseq/star
-OUTDIR="${TARGETDIR}/fastq_Rnaseq/star"
+mkdir -p ${TARGETDIR}/star
+OUTDIR=${TARGETDIR}/star
 
 # file ids
-FILEIDS="${TARGETDIR}/SRR_Acc_List_rna.txt"  # SRR_Acc_List.txt  qclist.txt
+FILEIDS=${TARGETDIR}/SRR_Acc_List.txt  # SRR_Acc_List.txt  qclist.txt
 FILES=`cat ${FILEIDS} | wc -l`  # number of files
-# RIBOSEQALLFILEID="${TARGETDIR}/SRR_Acc_List_ribo.txt"
-# RIBOSEQALLFILES=`cat ${ROBPSEQALLFILEID} | wc -l`
 
 # ensemble index
-INDEXDIR="/Volumes/HDD24TB/RefGenome/ENSEMBLE/index/star50bp"  # check
+INDEXDIR="/Volumes/HDD24TB/RefGenome/ENSEMBLE/index/star100bp"  # check
 
 # time
 script_started=`date +%s`
@@ -31,10 +29,9 @@ script_started=`date +%s`
 # STAR
 cd ${FASTPDIR}
 count=1
-
 cat ${FILEIDS} | while read line; do
     SECONDS=0
-    echo STAR ${count} /${FILES}: ${line} `date "+%m/%d/%Y %H:%M:%S"`
+    echo `date "+%m/%d/%Y %H:%M:%S"` STAR ${count} /${FASTPFILES}: ${line}
     
     echo decompressing fastq.gz...
     ### check last 4 lines
@@ -46,14 +43,14 @@ cat ${FILEIDS} | while read line; do
     --outSAMtype BAM SortedByCoordinate \
     --outFileNamePrefix ${OUTDIR}/${line}. \
     --quantMode GeneCounts \
-    --outReadsUnmapped Fastx \
-    --outFilterScoreMinOverLread 0 \
-    --outFilterMatchNminOverLread 0 \
-    --outFilterMatchNmin 0 \
-    --outFilterMismatchNmax 2 
+    --outReadsUnmapped Fastx #\
+    # --outFilterScoreMinOverLread 0 \
+    # --outFilterMatchNminOverLread 0 \
+    # --outFilterMatchNmin 0 \
+    # --outFilterMismatchNmax 2 
     
     # processed time for one file
-    echo finished ${line} `date "+%m/%d/%Y %H:%M:%S"`
+    echo `date "+%m/%d/%Y %H:%M:%S"` finished ${line}
     h=$(($SECONDS/3600))
     m=$((($SECONDS/60)%60))
     s=$(($SECONDS%60))
@@ -72,7 +69,7 @@ cat ${FILEIDS} | while read line; do
     echo "\n"
 done
 
-echo STAR finished
+echo `date "+%m/%d/%Y %H:%M:%S"` STAR finished
 
 # moving files
 cd ${OUTDIR} # check directory name
