@@ -20,7 +20,7 @@ mkdir -p ${TARGETDIR}/fastp
 FASTPDIR=${TARGETDIR}/fastp
 
 # file ids
-FILEIDS=${TARGETDIR}/SRR_Acc_List.txt
+FILEIDS=${TARGETDIR}/SRR_Acc_List.txt  # SRR_Acc_List.txt  qclist.txt
 FILES=`cat ${FILEIDS} | wc -l`
 
 cd ${FASTPDIR}
@@ -33,7 +33,8 @@ cat $FILEIDS | while read line; do
     # -3: enable per read cutting by quality in tail (3'), default is disabled
     # (WARNING: this will interfere deduplication for SE data)
     fastp -i ${FASTQDIR}/${line}.fastq.gz -o ${line}.fastp.fastq.gz \
-    -h html/${line}.report.html -j json/${line}.report.json --thread 8 -q 20 
+    -h html/${line}.report.html -j json/${line}.report.json \
+    --trim_tail1=1 --thread 6 -q 20 
     
     # pair end
     # fastp -i ${FASTQDIR}/${line}_1.fastq.gz -I ${FASTQDIR}/${line}_2.fastq.gz -3 \
@@ -41,10 +42,9 @@ cat $FILEIDS | while read line; do
     # --detect_adapter_for_pe \
     # -h html/${line}.report.html -j json/${line}.report.json \
     # -q 20 --trim_tail1 1 --trim_tail2 1 -l 20 --thread 4
-    echo `date "+%m/%d/%Y %H:%M:%S"` ${line} finished
     
     # processed time for one file
-    echo `date "+%m/%d/%Y %H:%M:%S"` finished ${line}
+    echo `date "+%m/%d/%Y %H:%M:%S"` ${line} finished
     h=$(($SECONDS/3600))
     m=$((($SECONDS/60)%60))
     s=$(($SECONDS%60))
