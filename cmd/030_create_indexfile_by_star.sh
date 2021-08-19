@@ -9,8 +9,7 @@ REFDIR=/Volumes/HDD24TB/RefGenome/ENSEMBLE
 mkdir -p ${REFDIR}/index/star100bp
 STARINDEXDIR=${REFDIR}/index/star100bp
 
-echo `date "+%m/%d/%Y %H:%M:%S"` STAR: 
-echo creating indexed reference genome file...
+# running STAR
 STAR \
 --runThreadN 10 \
 --runMode genomeGenerate \
@@ -18,7 +17,6 @@ STAR \
 --genomeFastaFiles ${REFDIR}/Homo_sapiens.GRCh38.dna.primary_assembly.fa \
 --sjdbGTFfile ${REFDIR}/Homo_sapiens.GRCh38.104.gtf \
 --sjdbOverhang 100  # default: 100, adjust the number mafter QC
-echo `date "+%m/%d/%Y %H:%M:%S"` indexed file created
 
 # processed time for one file
 h=$(($SECONDS/3600))
