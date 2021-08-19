@@ -2,19 +2,24 @@
 # checking strandness
 
 # targets
-TYPE="inactive"  # check
-TARGET="GSE113165"  # check
-ID="SRR7007949.sort.bam"  # check
+TYPE="aging"  # check
+TARGET="GSE129643"  # check
+PROJECTDIR=/Volumes/HDD24TB/MetaAnalysisProject_Apr2021
+TARGETDIR=${PROJECTDIR}/${TYPE}/${TARGET}  # output directory
 
 # input: bam file directory 
-BAMDIR="/Volumes/HDD24TB/${TARGET}/re/bam/"
+BAMDIR=${TARGETDIR}/star
 
 # ref: bed file directory
-BEDFILE="/Users/Emma/Documents/Bioinformatics/RefGenome/ENSEMBLE/Homo_sapiens.GRCh38.104.bed"
+BEDFILE=/Volumes/HDD24TB/RefGenome/ENSEMBLE/Homo_sapiens.GRCh38.104.bed
 
-# outdir
-OUTDIR="/Users/Emma/Documents/Bioinformatics/DEG/MetaAnalysisProject_Apr2021/${TYPE}/${TARGET}/"
-
-# for bam in `ls ${FASTQDIR}` | while read line; do
-infer_experiment.py -r ${BEDFILE} -i ${BAMDIR}${ID} > ${OUTDIR}${ID}_strand_stat.txt
-
+# infer_experiment.py
+for id in `cat ${TARGETDIR}/qclist.txt | head -1`; do
+    echo checking strandness: ${id} "(${TARGET})"
+    echo "${id}.Aligned.sortedByCoord.out.bam" > ${TARGETDIR}/strandstat.txt
+    
+    infer_experiment.py \
+    -r ${BEDFILE} \
+    -i ${BAMDIR}/${id}.Aligned.sortedByCoord.out.bam \
+    >> ${TARGETDIR}/strandstat.txt
+done
