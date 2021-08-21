@@ -1,0 +1,7 @@
+SRR8882175.Aligned.sortedByCoord.out.bam
+
+
+This is SingleEnd Data
+Fraction of reads failed to determine: 0.1530
+Fraction of reads explained by "++,--": 0.4232
+Fraction of reads explained by "+-,-+": 0.4238
