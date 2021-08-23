@@ -2,20 +2,20 @@
 # featureCount for single end
 
 # targets
-TYPE="inactive"  # check
-TARGET="GSE113165"  # check
-# output directory
-OUTDIR="/Volumes/HDD24TB/MetaAnalysisProject_Apr2021/${TYPE}/${TARGET}"
+TYPE="aging"  # check
+TARGET="GSE129643"  # check
+PROJECTDIR=/Volumes/HDD24TB/MetaAnalysisProject_Apr2021
+TARGETDIR=${PROJECTDIR}/${TYPE}/${TARGET}
 
 # gtf file
-GTFFILE="/Users/Emma/Documents/Bioinformatics/RefGenome/ENSEMBLE/Homo_sapiens.GRCh38.104.gtf"
+GTFFILE=/Volumes/HDD24TB/RefGenome/ENSEMBLE/Homo_sapiens.GRCh38.104.gtf
 
 # bam directory
-BAMDIR="/Volumes/HDD24TB/${TARGET}/sickle/bam"
-BAMFILES=`ls ${BAMDIR}`
+BAMDIR=${TARGETDIR}/star
+BAMFILES=`ls ${BAMDIR}/*.bam`
 
 cd ${BAMDIR}
 # -s: # 0 (unstranded, default), 1 (stranded) and 2 (reversely stranded)
-featureCounts -T 4 -t exon -g gene_id -O -M -s 2 \
--a ${GTFFILE} -o ${OUTDIR}/counts.sickle.txt ${BAMFILES}
+featureCounts -T 10 -t exon -g gene_id -O -M --fraction \
+-a ${GTFFILE} -o ${TARGETDIR}/counts.txt ${BAMFILES}
 echo finished
