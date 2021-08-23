@@ -1,0 +1,420 @@
+(base) 08/21/21 16:46:36 hiro @/Volumes/HDD24TB/MetaAnalysisProject_Apr2021/aging/GSE129643/cmd % sh 060_featureCount_s.sh 
+        ==========     _____ _    _ ____  _____  ______          _____  
+        =====         / ____| |  | |  _ \|  __ \|  ____|   /\   |  __ \ 
+          =====      | (___ | |  | | |_) | |__) | |__     /  \  | |  | |
+            ====      \___ \| |  | |  _ <|  _  /|  __|   / /\ \ | |  | |
+              ====    ____) | |__| | |_) | | \ \| |____ / ____ \| |__| |
+        ==========   |_____/ \____/|____/|_|  \_\______/_/    \_\_____/
+          v2.0.1
+
+//========================== featureCounts setting ===========================\\
+||                                                                            ||
+||             Input files : 53 BAM files                                     ||
+||                           o SRR8882171.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882172.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882173.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882174.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882175.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882176.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882177.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882178.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882179.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882180.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882181.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882182.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882183.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882184.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882185.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882186.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882187.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882188.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882189.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882190.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882191.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882192.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882193.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882194.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882195.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882196.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882197.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882198.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882199.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882200.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882201.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882202.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882203.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882204.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882205.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882206.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882207.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882208.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882209.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882210.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882211.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882212.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882213.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882214.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882215.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882216.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882217.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882218.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882219.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882220.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882221.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882222.Aligned.sortedByCoord.out.bam       ||
+||                           o SRR8882223.Aligned.sortedByCoord.out.bam       ||
+||                                                                            ||
+||             Output file : counts.txt                                       ||
+||                 Summary : counts.txt.summary                               ||
+||              Annotation : Homo_sapiens.GRCh38.104.gtf (GTF)                ||
+||      Dir for temp files : /Volumes/HDD24TB/MetaAnalysisProject_Apr2021 ... ||
+||                                                                            ||
+||                 Threads : 10                                               ||
+||                   Level : meta-feature level                               ||
+||              Paired-end : no                                               ||
+||      Multimapping reads : counted (fractional)                             ||
+|| Multi-overlapping reads : counted                                          ||
+||   Min overlapping bases : 1                                                ||
+||                                                                            ||
+\\============================================================================//
+
+//================================= Running ==================================\\
+||                                                                            ||
+|| Load annotation file Homo_sapiens.GRCh38.104.gtf ...                       ||
+||    Features : 1498409                                                      ||
+||    Meta-features : 60664                                                   ||
+||    Chromosomes/contigs : 47                                                ||
+||                                                                            ||
+|| Process BAM file SRR8882171.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 48996201                                             ||
+||    Successfully assigned alignments : 26085088 (53.2%)                     ||
+||    Running time : 1.28 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882172.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 53280962                                             ||
+||    Successfully assigned alignments : 41624958 (78.1%)                     ||
+||    Running time : 1.55 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882173.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 40474557                                             ||
+||    Successfully assigned alignments : 17896130 (44.2%)                     ||
+||    Running time : 1.31 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882174.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 58644900                                             ||
+||    Successfully assigned alignments : 48465699 (82.6%)                     ||
+||    Running time : 1.49 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882175.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 52019008                                             ||
+||    Successfully assigned alignments : 13127090 (25.2%)                     ||
+||    Running time : 1.69 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882176.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 42944153                                             ||
+||    Successfully assigned alignments : 31089027 (72.4%)                     ||
+||    Running time : 1.19 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882177.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 63902696                                             ||
+||    Successfully assigned alignments : 44600332 (69.8%)                     ||
+||    Running time : 1.47 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882178.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 46275515                                             ||
+||    Successfully assigned alignments : 36993340 (79.9%)                     ||
+||    Running time : 1.23 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882179.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 56972794                                             ||
+||    Successfully assigned alignments : 42498087 (74.6%)                     ||
+||    Running time : 1.47 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882180.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 54462462                                             ||
+||    Successfully assigned alignments : 36756541 (67.5%)                     ||
+||    Running time : 1.45 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882181.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 55377026                                             ||
+||    Successfully assigned alignments : 38072855 (68.8%)                     ||
+||    Running time : 1.46 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882182.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 46967909                                             ||
+||    Successfully assigned alignments : 30886116 (65.8%)                     ||
+||    Running time : 1.21 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882183.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 36672279                                             ||
+||    Successfully assigned alignments : 25595272 (69.8%)                     ||
+||    Running time : 1.04 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882184.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 63857590                                             ||
+||    Successfully assigned alignments : 43177972 (67.6%)                     ||
+||    Running time : 1.77 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882185.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 71222937                                             ||
+||    Successfully assigned alignments : 40874386 (57.4%)                     ||
+||    Running time : 1.66 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882186.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 62681273                                             ||
+||    Successfully assigned alignments : 40739077 (65.0%)                     ||
+||    Running time : 1.98 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882187.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 64888519                                             ||
+||    Successfully assigned alignments : 28912725 (44.6%)                     ||
+||    Running time : 2.06 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882188.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 49034937                                             ||
+||    Successfully assigned alignments : 27150033 (55.4%)                     ||
+||    Running time : 1.43 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882189.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 60967956                                             ||
+||    Successfully assigned alignments : 43580705 (71.5%)                     ||
+||    Running time : 1.61 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882190.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 52485027                                             ||
+||    Successfully assigned alignments : 5849622 (11.1%)                      ||
+||    Running time : 1.79 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882191.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 39956188                                             ||
+||    Successfully assigned alignments : 23861314 (59.7%)                     ||
+||    Running time : 1.14 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882192.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 58554188                                             ||
+||    Successfully assigned alignments : 38453919 (65.7%)                     ||
+||    Running time : 1.43 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882193.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 121313224                                            ||
+||    Successfully assigned alignments : 62837045 (51.8%)                     ||
+||    Running time : 4.11 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882194.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 123141828                                            ||
+||    Successfully assigned alignments : 90103334 (73.2%)                     ||
+||    Running time : 4.01 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882195.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 139958030                                            ||
+||    Successfully assigned alignments : 120355350 (86.0%)                    ||
+||    Running time : 3.76 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882196.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 132045180                                            ||
+||    Successfully assigned alignments : 104427402 (79.1%)                    ||
+||    Running time : 3.82 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882197.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 131122411                                            ||
+||    Successfully assigned alignments : 104715497 (79.9%)                    ||
+||    Running time : 3.42 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882198.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 126112287                                            ||
+||    Successfully assigned alignments : 101633999 (80.6%)                    ||
+||    Running time : 3.29 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882199.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 179695857                                            ||
+||    Successfully assigned alignments : 154253022 (85.8%)                    ||
+||    Running time : 4.48 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882200.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 136701453                                            ||
+||    Successfully assigned alignments : 108528697 (79.4%)                    ||
+||    Running time : 3.70 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882201.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 161927166                                            ||
+||    Successfully assigned alignments : 130460798 (80.6%)                    ||
+||    Running time : 4.06 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882202.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 129122432                                            ||
+||    Successfully assigned alignments : 115135974 (89.2%)                    ||
+||    Running time : 3.15 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882203.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 127269576                                            ||
+||    Successfully assigned alignments : 110671717 (87.0%)                    ||
+||    Running time : 2.91 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882204.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 120366704                                            ||
+||    Successfully assigned alignments : 100791492 (83.7%)                    ||
+||    Running time : 3.11 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882205.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 154270067                                            ||
+||    Successfully assigned alignments : 133450908 (86.5%)                    ||
+||    Running time : 3.76 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882206.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 121036176                                            ||
+||    Successfully assigned alignments : 96649886 (79.9%)                     ||
+||    Running time : 3.43 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882207.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 219861254                                            ||
+||    Successfully assigned alignments : 172996278 (78.7%)                    ||
+||    Running time : 6.05 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882208.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 140419990                                            ||
+||    Successfully assigned alignments : 39512002 (28.1%)                     ||
+||    Running time : 4.26 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882209.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 261785013                                            ||
+||    Successfully assigned alignments : 215596587 (82.4%)                    ||
+||    Running time : 6.65 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882210.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 146746088                                            ||
+||    Successfully assigned alignments : 111930773 (76.3%)                    ||
+||    Running time : 3.94 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882211.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 174676591                                            ||
+||    Successfully assigned alignments : 100469532 (57.5%)                    ||
+||    Running time : 4.81 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882212.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 171977594                                            ||
+||    Successfully assigned alignments : 151148934 (87.9%)                    ||
+||    Running time : 4.03 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882213.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 142569406                                            ||
+||    Successfully assigned alignments : 118025119 (82.8%)                    ||
+||    Running time : 3.87 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882214.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 152389378                                            ||
+||    Successfully assigned alignments : 119741542 (78.6%)                    ||
+||    Running time : 4.07 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882215.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 135142139                                            ||
+||    Successfully assigned alignments : 114974938 (85.1%)                    ||
+||    Running time : 3.34 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882216.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 144410327                                            ||
+||    Successfully assigned alignments : 119652645 (82.9%)                    ||
+||    Running time : 3.82 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882217.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 140152799                                            ||
+||    Successfully assigned alignments : 125369084 (89.5%)                    ||
+||    Running time : 4.08 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882218.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 151129037                                            ||
+||    Successfully assigned alignments : 130886356 (86.6%)                    ||
+||    Running time : 3.87 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882219.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 122348494                                            ||
+||    Successfully assigned alignments : 92250256 (75.4%)                     ||
+||    Running time : 3.25 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882220.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 117963144                                            ||
+||    Successfully assigned alignments : 106594806 (90.4%)                    ||
+||    Running time : 3.46 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882221.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 152393301                                            ||
+||    Successfully assigned alignments : 116898343 (76.7%)                    ||
+||    Running time : 3.96 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882222.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 137633727                                            ||
+||    Successfully assigned alignments : 95058979 (69.1%)                     ||
+||    Running time : 3.70 minutes                                             ||
+||                                                                            ||
+|| Process BAM file SRR8882223.Aligned.sortedByCoord.out.bam...               ||
+||    Single-end reads are included.                                          ||
+||    Total alignments : 139745129                                            ||
+||    Successfully assigned alignments : 88083189 (63.0%)                     ||
+||    Running time : 3.91 minutes                                             ||
+||                                                                            ||
+|| Write the final count table.                                               ||
+|| Write the read assignment summary.                                         ||
+||                                                                            ||
+|| Summary of counting results can be found in file "/Volumes/HDD24TB/MetaAn  ||
+|| alysisProject_Apr2021/aging/GSE129643/counts.txt.summary"                  ||
+||                                                                            ||
+\\============================================================================//
+
+
+low results:
+SRR8882173  44.2%
+SRR8882175  25.2%
+SRR8882187  44.6%
+SRR8882190  11.1%
+SRR8882208  28.1%
